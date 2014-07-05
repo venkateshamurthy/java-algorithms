@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static java.lang.Integer.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import algos.trees.visitors.MirroringVisitor;
 import algos.trees.visitors.PostOrderPrinter;
 import algos.trees.visitors.PreOrderPrinter;
 import algos.trees.visitors.PrintVerticalPathVisitor;
+import algos.trees.visitors.SizeVisitor;
 import algos.trees.visitors.Visitor;
 import custom.junit.runners.OrderedJUnit4ClassRunner;
 
@@ -228,6 +230,7 @@ public class TestBinarySearchTree {
 		assertNull(bst.contains(32));
 		assertTrue(bst.validate(MIN_VALUE,MAX_VALUE));
 		assertEquals(27, bst.size());
+		assertTrue(27==new SizeVisitor<Integer>().visit(bst));
 	}
 
 	@Test public void testHasPathSum() {

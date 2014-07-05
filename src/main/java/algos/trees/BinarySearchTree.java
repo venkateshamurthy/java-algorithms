@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 
+import algos.trees.visitors.SizeVisitor;
 import algos.trees.visitors.Visitor;
 
 //Using lombok annotation for log4j handle
@@ -70,6 +71,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	}
 
 	@Override public int size() {
+	    //return new SizeVisitor<T>().visit(root);
 		return bst.size(root);
 		//Tree<T> t = this; 
 		//this.accept((Visitor<T, ?, ?>) SizeVisitor.builder().build());

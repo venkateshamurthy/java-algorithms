@@ -14,7 +14,7 @@ f) Next do a cd java-algorithms
 g) Assuming maven is available in the path: just type "mvn clean verify" and it should build and run tests
 
 How to create eclipse project:
-------------------------------
+-------------------------------
 a) Please ensure that lombok.jar (from http://projectlombok.org ) is downloaded 
 b) next, reach to your cygwin prompt and reach upto the folder where lombok.jar is downloaded(as of date the version is 1.14.4)
 c) next, type in cygwin: java -jar lombok.jar
