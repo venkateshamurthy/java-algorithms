@@ -34,8 +34,8 @@ import algos.trees.Tree;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SizeVisitor<T extends Comparable<T>> implements
         Visitor<T, Integer, Integer> {
-    public static <Y extends Comparable<Y>> SizeVisitor<Y> of(Tree<Y> tree) {
-        return new SizeVisitor<Y>(tree);
+    public static <Y extends Comparable<Y>> SizeVisitor<Y> of() {
+        return new SizeVisitor<Y>();
     }
 
     static final Logger log = LogManager
@@ -55,8 +55,6 @@ public class SizeVisitor<T extends Comparable<T>> implements
         // TODO Auto-generated method stub
         return visit(t.root());
     }
-
-    Tree<T> tree;
 
     /*
      * (non-Javadoc)
