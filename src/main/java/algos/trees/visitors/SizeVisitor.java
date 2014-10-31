@@ -63,10 +63,11 @@ public class SizeVisitor<T extends Comparable<T>> implements
      */
     @Override
     public Integer visit(Element<T> e) {
-
         log.debug(e.value() + " s=" + runningSize.get());
-        return runningSize.addAndGet(1 + (e.hasLeft() ? visit(e.left()) : 0) +
-                (e.hasRight() ? visit(e.right()) : 0));
+        runningSize.incrementAndGet();
+        if (e.hasLeft()) visit(e.left());
+  		if (e.hasRight()) visit(e.right());
+        return runningSize.get();
     }
 
     /*
