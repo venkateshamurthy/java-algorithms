@@ -230,7 +230,10 @@ public class TestBinarySearchTree {
 		assertNull(bst.contains(32));
 		assertTrue(bst.validate(MIN_VALUE,MAX_VALUE));
 		assertEquals(27, bst.size());
-		assertTrue(27==new SizeVisitor<Integer>().visit(bst));
+		SizeVisitor<Integer> visitor=new SizeVisitor<Integer>();
+		visitor.visit(bst);
+		int sz=visitor.collection();
+		assertTrue("sz is "+sz,27==sz);
 	}
 
 	@Test public void testHasPathSum() {
