@@ -10,7 +10,7 @@ import algos.graphs.VertexInterface;
  * @param <R>
  * @param <C>
  */
-public interface GraphVisitor<T extends Comparable<T>, R, C> {
+public interface  GraphVisitor<T extends Comparable<T>, R, C> {
 	/**
 	 * Visit method to visit inside graph nd basically leads to {@link #visit(VertexInterface)}. 
 	 * However in this method any start up/initial one time initializations or activities can be done in this method,

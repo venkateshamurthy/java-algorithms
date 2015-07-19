@@ -7,32 +7,31 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.cglib.core.Predicate;
-import org.springframework.util.Assert;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.val;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+
+import org.springframework.util.Assert;
+
 import algos.graphs.GraphInterface;
 import algos.graphs.VertexInterface;
-import algos.graphs.Visitor;
 
 /**
- * A DFS traverser of a {@link GraphInterface&lt;Type&gt;} that uses a data
+ * A DFS traverser of a {@link GraphInterface&lt;T&gt;} that uses a data
  * structure instead of implicit recursion
  * 
  * @author vemurthy
  *
- * @param <Type>
+ * @param <T>
  */
 @Accessors(fluent = true)
-@Data(staticConstructor = "of")
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class DFS<Type extends Comparable<Type>> implements
-		GraphVisitor<Type, Void, Set<VertexInterface<Type>>> {
+public class DFS<T extends Comparable<T>> implements GraphVisitor<T, Void, Set<VertexInterface<T>>> 
+{
 
 	/** A constant to indicate Inf */
 	static double INFINITY = Double.POSITIVE_INFINITY;
@@ -45,17 +44,17 @@ public class DFS<Type extends Comparable<Type>> implements
 	/**
 	 * A collection variable accumulating as the visit traverses
 	 */
-	Set<VertexInterface<Type>> collection = new LinkedHashSet<>();
+	Set<VertexInterface<T>> collection = new LinkedHashSet<>();
 
 	/**
 	 * {@link java.util.Deque Deque} data structure for queuing/pushing the
 	 * vertices discovered for their neighbors/descendant traversals
 	 * respectively
 	 */
-	Deque<VertexInterface<Type>> S = new ArrayDeque<>();
+	Deque<VertexInterface<T>> S = new ArrayDeque<>();
 
 	/** A graph instance */
-	GraphInterface<Type> G;
+	GraphInterface<T> G;
 
 	/**
 	 * Post construct call as i dont want to add this into a lombok
@@ -72,7 +71,7 @@ public class DFS<Type extends Comparable<Type>> implements
 	 * @see algos.graphs.Visitor#visit(java.lang.Object)
 	 */
 	@Override
-	public Void visit(VertexInterface<Type> s) {
+	public Void visit(VertexInterface<T> s) {
 		Assert.isTrue(G.verticies().contains(s));
 		if (s.visitCleared()) {
 			s.startVisit().weight(0d).pi(null);
@@ -98,8 +97,8 @@ public class DFS<Type extends Comparable<Type>> implements
 	 * @param G
 	 *            is the graph passed.
 	 */
-	void clear(GraphInterface<Type> G) {
-		for (VertexInterface<Type> u : G.verticies())
+	void clear(GraphInterface<T> G) {
+		for (VertexInterface<T> u : G.verticies())
 			u.weight(INFINITY).clearVisit().pi(null).discoveredState(0)
 					.finishedState(0);
 		time = 0;
@@ -108,11 +107,10 @@ public class DFS<Type extends Comparable<Type>> implements
 	}
 
 	@Override
-	public Void visit(GraphInterface<Type> G) {
-		// Initialize pi, color and distance except for s
-		clear(G);
-		for (val v : G.verticies())
-			visit(v);
-		return v_o_i_d;
+	public Void visit(GraphInterface<T> G) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	
 }

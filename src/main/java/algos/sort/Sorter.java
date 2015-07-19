@@ -12,12 +12,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 
 import algos.lists.MaxHeap;
 
@@ -26,12 +24,11 @@ import algos.lists.MaxHeap;
  * 
  */
 @Data
+@Slf4j
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Sorter {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
 	int[] a;
 
 	public static SortInterface of(String name, int[] a) {
@@ -122,7 +119,7 @@ public class Sorter {
 
 		@Override
 		public int[] sort() {
-			b = new int[(a.length) / 2];
+			b = new int[(a.length)+1 / 2];
 			log.debug(ArrayUtils.toString(a));
 			return mergeSort(a, 0, a.length - 1);
 		}
@@ -132,22 +129,20 @@ public class Sorter {
 				int mid = i + (j - i) / 2;
 				mergeSort(a, i, mid);
 				mergeSort(a, mid + 1, j);
-				merge(a, i, mid + 1, j);
+				merge(a, i, mid, mid + 1 , j);
 			}
 			return a;
 		}
 
-		protected int[] merge(int[] a, final int l, final int m, final int r) {
-			int i = l, j = m - 1, k = l;
-			System.arraycopy(a, 0, b, 0, j - l);
-			while (i < m && j < r) {
-				a[k] = a[i] <= b[j] ? a[i++] : b[j++];
-				k++;
-			}
-			while (i < m)
-				a[k++] = a[i++];
-			while (j < r)
-				a[k++] = b[j++];
+		protected int[] merge(int[] a, final int leftStart, final int leftEnd,final int rightStart, final int rightEnd) {
+			int i = leftStart, j = rightStart, k = 0;
+			while (i <= leftEnd && j <= rightEnd) 
+				b[k++] = a[i] <= a[j] ? a[i++] : a[j++];
+			while (i <= leftEnd)
+				b[k++] = a[i++];
+			while (j <= rightEnd)
+				b[k++] = a[j++];
+			System.arraycopy(b, 0, a, leftStart, rightEnd-leftStart+1);
 			return a;
 		}
 

@@ -90,7 +90,7 @@ public class TestElement {
 			if (i + 1 < e.length - 1) {
 				assertTrue(e[i + 1].hasRight());
 				assertTrue(e[i+1].hasLeft());
-				log.debug("%d=%s e[i+1].left= %s hasLeft=%s",i+1,e[i+1],e[i+1].left(),e[i+1].hasLeft());
+				log.debug("{}={} e[i+1].left= {} hasLeft={}",i+1,e[i+1],e[i+1].left(),e[i+1].hasLeft());
 				//assertFalse((i+1)+"'th one messedup",e[i + 1].hasLeft());//b'cos e[i] is deleted
 			}
 			else {
