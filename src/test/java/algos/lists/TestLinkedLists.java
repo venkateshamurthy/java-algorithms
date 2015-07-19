@@ -12,26 +12,21 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.val;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.junit.Test;
+//Using lombok annotation for log4j handle
 
 /**
  * @author vmurthy
  * 
  */
 // Log4j Handle creator (from lombok)
-@Log4j2
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TestLinkedLists {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
 
 	@Test public void detectLoop() {
 		boolean doLoop = true, isLoop = false;
@@ -45,7 +40,7 @@ public class TestLinkedLists {
 		val sentinel = linkedList.sentinel();
 		Element<Integer> slow = linkedList.elementAt(0), fast = slow.right();
 		while (slow != sentinel && fast != sentinel && fast.right() != sentinel) {
-			log.warn("slow=%d,fast=%d:", slow.value(), fast.value());
+			log.warn("slow={},fast={}:", slow.value(), fast.value());
 			if (slow == fast) {
 				log.warn("Loop ptrs met at:" + slow.value());
 				isLoop = true;
@@ -64,7 +59,7 @@ public class TestLinkedLists {
 
 				p1 = p1.right();
 				p2 = p2.right();
-				log.warn("p1=" + p1.value() + "p2=" + p2.value());
+				log.warn("p1={} p2={}" , p1.value() , p2.value());
 			}
 			p2.right(sentinel);//set this to sentinel to remove the loop
 		}
@@ -73,9 +68,9 @@ public class TestLinkedLists {
 		fast = slow.right();
 		isLoop = false;
 		while (slow != sentinel && fast != sentinel && fast.right() != sentinel) {
-			log.warn("slow=%d,fast=%d:", slow.value(), fast.value());
+			log.warn("slow={},fast={}", slow.value(), fast.value());
 			if (slow == fast) {
-				log.warn("Loop ptrs met at:" + slow.value());
+				log.warn("Loop ptrs met at:{}" , slow.value());
 				isLoop = true;
 				break;
 			}
@@ -124,7 +119,7 @@ public class TestLinkedLists {
 			linkedList.add(i);
 		for (int i = 0; i < 10 - 1; i++) {
 			linkedList.delete(0);
-			log.debug("testDelete:" + (i) + " value(0):" + linkedList.get(0));
+			log.debug("testDelete:{} value(0): {}" , (i) , linkedList.get(0));
 			assertEquals(i + 1, (int) linkedList.get(0));
 		}
 
@@ -137,7 +132,7 @@ public class TestLinkedLists {
 			linkedList.add(i);
 		for (int i = 0; i < 10 - 1; i++) {
 			linkedList.delete(0);
-			log.debug("testDelete:" + (i) + " value(0):" + linkedList.get(0));
+			log.debug("testDelete:{} value(0): {}" , (i) , linkedList.get(0));
 			assertEquals(i + 1, (int) linkedList.get(0));
 		}
 		linkedList.delete(0);
