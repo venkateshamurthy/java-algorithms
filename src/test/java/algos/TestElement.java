@@ -4,14 +4,11 @@
 package algos;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,9 +20,8 @@ import algos.lists.Element;
  * @author vmurthy
  * 
  */
+@Slf4j
 public class TestElement {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
 	@Test(expected = NullPointerException.class) public void testNullCheck() {
 		Element.of(null);
 		fail("Should throw NPE...cannot succeed");

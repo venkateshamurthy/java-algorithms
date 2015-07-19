@@ -1,10 +1,8 @@
 /**
  * 
  */
-package algos.lists;
+package algos.arrays;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -12,11 +10,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
+import lombok.extern.slf4j.Slf4j;
+//Using lombok annotation for log4j handle
 
 /**
  * Maximum Sub array problem. To find maximum sums of Left part, right part and
@@ -27,28 +22,19 @@ import org.apache.logging.log4j.message.StringFormatterMessageFactory;
  * 
  */
 // Log4j Handle creator (from lombok)
-@Log4j2
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FindMaximumSubArray {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
+	
+	private MaxSum findMaximumCrossingSubArray(List<Integer> list, 
+			final int low, final int mid, final int high) {
 
-	public static void main(String[] args) {
-		List<Integer> list = Arrays.asList(new Integer[] { 13, -3, -25, 20, -3,
-				-16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7 });
-		FindMaximumSubArray problem = new FindMaximumSubArray();
-		MaxSum ms = problem.findMaximumSubArray(list, 0, list.size() - 1);
-		log.debug("Final:" + ms);
-	}
-
-	private MaxSum findMaximumCrossingSubArray(List<Integer> list, int low,
-			int mid, int high) {
-
-		int leftSum = Integer.MIN_VALUE, rightSum = Integer.MIN_VALUE, cLow = low, cHigh = high;
+		int leftSum = Integer.MIN_VALUE, rightSum = Integer.MIN_VALUE, 
+				cLow = low, cHigh = high;
 		// Left Part
-		for (int i = mid, sum = 0; i >= 0; i--) {
+		for (int i = mid, sum = 0; i >= low; i--) {
 			sum += list.get(i);
 			if (sum > leftSum) {
 				leftSum = sum;
@@ -71,22 +57,56 @@ public class FindMaximumSubArray {
 													// are MIN_VALUE
 						&& leftSum != Integer.MIN_VALUE ? (rightSum + leftSum)
 						: Integer.MIN_VALUE);
-		log.debug("Cross:" + ms);
+		log.info("Cross:{}" , ms);
 		return ms;
 	}
 
 	public MaxSum findMaximumSubArray(List<Integer> list, int l, int h) {
 		if (l >= h) {
 			MaxSum ms = MaxSum.of(l,h,list.get(l));
-			log.debug("NoCross:" + ms);
+			log.info("NoCross:{}" , ms);
 			return ms;
 		} else {
 			int low = l, high = h, mid = ((l + h) / 2);
-			MaxSum lMaxSum = findMaximumSubArray(list, low, mid), rMaxSum = findMaximumSubArray(
-					list, mid + 1, high);
+			MaxSum lMaxSum =  findMaximumSubArray(list, low,     mid), 
+					rMaxSum = findMaximumSubArray(list, mid + 1, high);
 			MaxSum cMaxSum = findMaximumCrossingSubArray(list, low, mid, high);
 			return MaxSum.findMax(lMaxSum, rMaxSum, cMaxSum);
 		}
+	}
+	
+	public static MaxSum findMaxSumSequence (int inputArray[])
+	{
+	    if (inputArray == null || inputArray.length == 0)
+	        throw new IllegalArgumentException("Array is empty");
+	 
+	    int size = inputArray.length;
+	 
+	    int maxSum = inputArray[0];
+	    int maxStartIndex = 0;
+	    int maxEndIndex = 0;
+	 
+	    int curSum = inputArray[0];
+	    int curStartIndex = 0;
+	 
+	 
+	    for (int i = 1; i < size; i++)
+	    {
+	        if (curSum < 0) {
+	            curSum = 0;
+	            curStartIndex = i;
+	        }
+	 
+	        curSum += inputArray[i];
+	 
+	        if (curSum > maxSum) {
+	            maxSum = curSum;
+	            maxStartIndex = curStartIndex;
+	            maxEndIndex = i;
+	        }
+	    } 
+	 
+	    return MaxSum.of(maxStartIndex, maxEndIndex, maxSum);
 	}
 
 }

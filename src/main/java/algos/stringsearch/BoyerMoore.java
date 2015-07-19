@@ -15,7 +15,7 @@ import lombok.experimental.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

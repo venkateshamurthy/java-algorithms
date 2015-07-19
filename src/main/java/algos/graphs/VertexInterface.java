@@ -19,6 +19,15 @@ public interface VertexInterface<T extends Comparable<T>> extends  Visitable<T>,
 	int finishedState();
 	VertexInterface<T> weight(Double weight);
 	VertexInterface<T> color(Color color);
+	VertexInterface<T> clearVisit();
+	/**if true un-visited vertex*/
+	boolean visitCleared();
+	VertexInterface<T> startVisit();
+	/**if true visit started */
+	boolean visitStarted();
+	VertexInterface<T> endVisit();
+	/**if visit ended/completed*/
+	boolean visitEnded();
 	VertexInterface<T> pi(VertexInterface<T> parent);
 	VertexInterface<T> discoveredState(int state);
 	VertexInterface<T> finishedState(int state);

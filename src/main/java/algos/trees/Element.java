@@ -4,14 +4,59 @@ import java.util.Comparator;
 
 import algos.trees.visitors.Visitor;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.val;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+
+/**
+ * An abstraction for a simple factory
+ * @author vemurthy
+ *
+ * @param <Y>
+ * @param <E>
+ */
+@Data
+@Accessors(fluent=true)
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
+abstract class AbstractElementFactory<Y extends Comparable<Y>, E extends Element<Y>>{
+	Comparator<Y> DEFAULT_COMPARATOR = new Comparator<Y>(){
+		@Override
+		public int compare(Y o1, Y o2) {
+			return o1.compareTo(o2);
+		}
+	};
+	
+	/** Comparator */
+	Comparator<Y> comparator;
+	
+	/** Default constructor */
+	AbstractElementFactory(){
+		comparator=DEFAULT_COMPARATOR;
+	}
+	
+	/**
+	 * Constructor
+	 * @param comparator an instance of Comparator<Y>
+	 */
+	AbstractElementFactory(Comparator<Y> comparator){
+		this.comparator = comparator;
+	}
+	/**
+	 * A method to create instances of type E
+	 * @param t an instance of type Y
+	 * @return an instance type E
+	 */
+	public abstract E create(Y t);
+}
+
 
 /**
  * @author vmurthy
@@ -21,11 +66,12 @@ import lombok.experimental.NonFinal;
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false, of = "value")
 @ToString(of = "value")
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class Element<T extends Comparable<T>> {
-    public static <Y extends Comparable<Y>> Element<Y> of(Comparator<Y> comparator,Y t){
-        return new Element<Y>(comparator, t);
-    }
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+public  class  Element<T extends Comparable<T>> {
+	@NonNull Comparator<T> comparator;
+	@NonNull @NonFinal T value;
+	@NonFinal Element<T> parent = this, left = this, right = this;
+	
 	/**
 	 * Left Lean Red Black tree changes to BST
 	 * *** START ****
@@ -40,33 +86,36 @@ public class Element<T extends Comparable<T>> {
 	public void accept(Visitor<T, ?, ?> visitor) {
 		visitor.visit(this);
 	}
-
-	@NonNull Comparator<T> comparator;
-	@NonNull @NonFinal T value;
-	@NonFinal Element<T> parent = this, left = this, right = this;
-	
-	
-	public int compare(Element<T> e) {
+	public <E extends Element<T>>  E left(){
+		return (E) left;
+	}	
+	public <E extends Element<T>>  E right(){
+		return (E) right;
+	}
+	public <E extends Element<T>>  E parent(){
+		return (E) parent;
+	}
+	public <E extends Element<T>> int compare(E e) {
 		return comparator.compare(value, e.value());
 	}
 
-	public boolean eq(Element<T> e) {
+	public <E extends Element<T>> boolean eq(E e) {
 		return value.equals(e.value());
 	}
 
-	public boolean lt(Element<T> e) {
+	public <E extends Element<T>> boolean lt(E e) {
 		return comparator.compare(value, e.value()) < 0;
 	}
 
-	public boolean le(Element<T> e) {
+	public <E extends Element<T>> boolean le(E e) {
 		return comparator.compare(value, e.value()) <= 0;
 	}
 
-	public boolean gt(Element<T> e) {
+	public <E extends Element<T>>  boolean gt(E e) {
 		return comparator.compare(value, e.value()) > 0;
 	}
 
-	public boolean ge(Element<T> e) {
+	public <E extends Element<T>> boolean ge(E e) {
 		return comparator.compare(value, e.value()) >= 0;
 	}
 
@@ -74,18 +123,19 @@ public class Element<T extends Comparable<T>> {
 		return left != this || right != this;
 	}
 
-	public Element<T> getChild(int cmp) {
+	public <E extends Element<T>> E getChild(int cmp) {
 		if (cmp == 0)
-			return this;
+			return (E) this;
 		else
-			return cmp < 0 ? left : right;
+			return (E) (cmp < 0 ? left : right);
 	}
 
-	public Element<T> setChild(int cmp, Element<T> child) {
+	public <E extends Element<T>> E setChild(int cmp, E child) {
 		if (cmp != 0) {
 			Element<T> e = cmp < 0 ? left(child) : right(child);
+			child.parent(this);
 		}
-		return this;
+		return (E) this;
 	}
 
 	public boolean hasLeft() {
@@ -95,6 +145,11 @@ public class Element<T extends Comparable<T>> {
 	public boolean isBachelor() {
 		// OMG See how happy it looks..
 		return left == this && right == this;
+	}
+	// just a convenient, traditional named method
+	public boolean isLeaf() {
+		// OMG See how happy it looks..
+		return isBachelor();
 	}
 
 	public boolean hasRight() {
@@ -114,8 +169,8 @@ public class Element<T extends Comparable<T>> {
 	 * 
 	 * @return The minimum.
 	 */
-	public Element<T> minimum() {
-		Element<T> node = this;
+	public <E extends Element<T>> E minimum() {
+		E node = (E) this;
 
 		while (node.left() != node)
 			node = node.left();
@@ -128,8 +183,8 @@ public class Element<T extends Comparable<T>> {
 	 * 
 	 * @return The maximum.
 	 */
-	public Element<T> maximum() {
-		Element<T> node = this;
+	public <E extends Element<T>> E maximum() {
+		E node = (E) this;
 
 		while (node.right() != node)
 			node = node.right();
@@ -142,11 +197,11 @@ public class Element<T extends Comparable<T>> {
 	 * 
 	 * @return The successor; or <code>null</code>.
 	 */
-	public Element<T> successor() {
+	public <E extends Element<T>> E successor() {
 		if (right != this)
 			return right.minimum();
 
-		Element<T> node = this;
+		E node = (E) this;
 
 		while (node.isRightChildOfItsParent()) {
 			node = node.parent();
@@ -160,12 +215,12 @@ public class Element<T extends Comparable<T>> {
 	 * 
 	 * @return The predecessor; or <code>null</code>.
 	 */
-	public Element<T> predecessor() {
+	public <E extends Element<T>> E  predecessor() {
 		if (left != this)
 			return left.maximum();
 
 		// else reach a top parent that is a left child
-		Element<T> node = this;
+		E node = (E) this;
 
 		while (node.isLeftChildOfItsParent()) {
 			node = node.parent();
@@ -174,8 +229,8 @@ public class Element<T extends Comparable<T>> {
 		return node.parent();
 	}
 
-	public Element<T> add(@NonNull Comparator<T> c, @NonNull T t) {
-		Element<T> e = of(c, t);
+	public <E extends Element<T>> E  add(Factory<T> factory, @NonNull T t) {
+		E e = (E)factory.create( t);
 		e.parent(this);
 		if (lt(e))
 			left = e;
@@ -224,8 +279,8 @@ public class Element<T extends Comparable<T>> {
 	 * 
 	 * @return
 	 */
-	public Element<T> getOnlyChild() {
-		return left != this ? left : right;
+	public <E extends Element<T>> E getOnlyChild() {
+		return (E) (left != this ? left : right);
 	}
 
 	/**
@@ -238,12 +293,31 @@ public class Element<T extends Comparable<T>> {
 	}
 
 	/**
-	 * 
+	 * Simple swap
 	 */
 	public void swapChildrenPosition() {
 		val temp = left;
 		left = right;
 		right = temp;
 	}
+	/**
+	 * A Factory class to create instances
+	 * @author vemurthy
+	 *
+	 * @param <Y>
+	 */
+	public static class Factory<Y extends Comparable<Y>> extends AbstractElementFactory<Y,Element<Y>>{
 
+		public Factory() {
+			super();
+		}
+		public Factory(Comparator<Y> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		public Element<Y> create(Y t) {
+			return new Element<Y>(comparator(),t);
+		}
+	}
 }

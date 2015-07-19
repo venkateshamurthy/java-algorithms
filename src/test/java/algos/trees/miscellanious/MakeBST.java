@@ -3,10 +3,8 @@
  */
 package algos.trees.miscellanious;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,11 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.val;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,19 +22,18 @@ import algos.trees.NaturalComparator;
 import algos.trees.Tree;
 import algos.trees.visitors.InOrderPrinter;
 import algos.trees.visitors.Visitor;
+//Using lombok annotation for log4j handle
 
 /**
  * @author vmurthy
  * 
  */
 // Log4j Handle creator (from lombok)
-@Log4j2
+@Slf4j
 @Data()
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MakeBST {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
 
 	Comparator<Integer> comparator = new NaturalComparator<Integer>();
 
@@ -56,10 +50,17 @@ public class MakeBST {
 		//Use this data as asserting reference
 		Integer[] data = new Integer[] { 2, 4, 7, 8, 10 };
 		//build the tree in haphazard manner (so no BST now)
-		root = Element.of(comparator, 10);
-		root.left(Element.of(comparator, 2)).right(Element.of(comparator, 7));
-		root.left().left(Element.of(comparator, 8))
-				.right(Element.of(comparator, 4));
+		Element.Factory<Integer> factory=new Element.Factory<Integer>(comparator);
+		root = factory.create(10);
+		
+		root
+		.left(factory.create( 2))
+		.right(factory.create( 7));
+		
+		root
+		.left()
+		.left(factory.create( 8))
+		.right(factory.create( 4));
 
 		//Next,  in-order traverse and collect the numbers
 		InOrderPrinter<Integer> inOrder = new InOrderPrinter<Integer>();

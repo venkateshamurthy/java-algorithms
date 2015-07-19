@@ -157,6 +157,36 @@ public class Graph<T extends Comparable<T>> implements
 			visitor.visit(this);
 		}
 
+		@Override
+		public VertexInterface<T> clearVisit() {
+			return color(WHITE);
+		}
+
+		@Override
+		public boolean visitCleared() {
+			return color==WHITE;
+		}
+
+		@Override
+		public VertexInterface<T> startVisit() {
+			return color(GRAY);
+		}
+
+		@Override
+		public boolean visitStarted() {
+			return color==GRAY;
+		}
+
+		@Override
+		public VertexInterface<T> endVisit() {
+			return color(BLACK);
+		}
+
+		@Override
+		public boolean visitEnded() {
+			return color==BLACK;
+		}
+
 		
 	}
 

@@ -5,11 +5,13 @@ package algos.arrays;
 
 import java.util.Random;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author vmurthy
  * 
  */
-
+@Slf4j
 public class SeggregateAsAndBs {
 	/**
 	 * A method to segregate instances of two classes in an array in place. Written currently as utility static method
@@ -36,6 +38,7 @@ public class SeggregateAsAndBs {
 					right--;
 					continue;
 				}
+				System.out.format("%s",objects.toString());
 				swap(objects, left++, right--);
 			}
 		}
@@ -46,9 +49,9 @@ public class SeggregateAsAndBs {
 	 */
 	public static void main(String[] args) {
 		Object[] objects = createStringIntegerObjectArray();
-		System.out.println(arrayToString(objects, ","));
+		log.info(arrayToString(objects, ","));
 		doSegregate(objects, String.class, Integer.class);
-		System.out.println(arrayToString(objects, ","));
+		log.info(arrayToString(objects, ","));
 	}
 
 	/**

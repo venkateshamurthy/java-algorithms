@@ -11,16 +11,15 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import lombok.experimental.Builder;
 import lombok.experimental.FieldDefaults;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 
-//Using lombok annotation for log4j handle
+import algos.lists.MaxHeap;
 
 /**
  * @author vmurthy
@@ -54,22 +53,65 @@ public class Sorter {
 		public int[] sort() {
 			for (int i = 1; i < a.length; i++) {
 				for (int j = i; j > 0; j--)
-					swap(a, j - 1, j);
+					if (a[j - 1] > a[j])
+						swap(a, j - 1, j);
 			}
 			return a;
 		}
 	}
 
+	// a[0,1,2....length-1]
+	class BubbleSort implements SortInterface {
+		public int[] sort() {
+			for (int i = 0; i < a.length - 1; i++) {
+				int temp;
+				for (int j = 0; j < a.length - i; j++) {
+					// swap only if required
+					if (a[j] > a[j + 1]) {
+						temp = a[j]; // first load a[j] to temp
+						a[j] = a[j + 1]; // next load a[j+1] to a[j]
+						a[j + 1] = temp; // next load temp to a[j+1]
+						// swap(a,j,j+1);
+					}
+				}
+			}
+			return a;
+		}
+
+		public int[] sort(int a[]) {
+			for (int i = 0; i < a.length - 1; i++) {
+				int temp;
+				for (int j = 0; j < a.length - i; j++) {
+					if (a[j] > a[j + 1]) {
+						temp = a[j];     // first load a[j] to temp
+						a[j] = a[j + 1]; // next load a[j+1] to a[j]
+						a[j + 1] = temp; // next load temp to a[j+1]
+						// swap(a,j,j+1);
+					}
+				}
+			}
+			return a;
+		}
+	}
+
+	//   0 1 2 3 4 5 6 7 8 9
+	//  {8 3 4 2 7 1 6 5 9 0}
+	//i  |               |
+	//j    |       |   |   |
 	class SelectionSort implements SortInterface {
 		public int[] sort() {
 			for (int i = 0; i < a.length - 1; i++) {
-				int index = i, min = a[index];
-				for (int j = i + 1; j < a.length; j++)
+				int pos = i, min = a[pos];
+				for (int j = i + 1; j < a.length; j++){
 					if (a[j] < min) {
-						index = j;
-						min = a[index];
+						pos = j;
+						min = a[pos];
 					}
-				swap(a, i, index);
+				}
+				int temp = a[i]; // first load a[j] to temp
+				a[i] = a[pos]; // next load a[j+1] to a[j]
+				a[pos] = temp; // next load temp to a[j+1]
+				//swap(a, i, index);
 			}
 			return a;
 		}
@@ -78,8 +120,9 @@ public class Sorter {
 	class MergeSort implements SortInterface {
 		int[] b;
 
-		@Override public int[] sort() {
-			b = new int[(a.length)];
+		@Override
+		public int[] sort() {
+			b = new int[(a.length) / 2];
 			log.debug(ArrayUtils.toString(a));
 			return mergeSort(a, 0, a.length - 1);
 		}
@@ -89,25 +132,22 @@ public class Sorter {
 				int mid = i + (j - i) / 2;
 				mergeSort(a, i, mid);
 				mergeSort(a, mid + 1, j);
-				merge(a, i, mid+1, j);
+				merge(a, i, mid + 1, j);
 			}
 			return a;
 		}
 
-		protected int[] merge(int[] a, int l, int m, int r) {
-			int i = l, j = m -1, k = l;
-			System.arraycopy(a, 0, b, 0, j-l);
+		protected int[] merge(int[] a, final int l, final int m, final int r) {
+			int i = l, j = m - 1, k = l;
+			System.arraycopy(a, 0, b, 0, j - l);
 			while (i < m && j < r) {
-				if (a[i] <= b[j])
-					a[k] = a[i++];
-				else
-					a[k] = b[j++];
+				a[k] = a[i] <= b[j] ? a[i++] : b[j++];
 				k++;
 			}
 			while (i < m)
 				a[k++] = a[i++];
 			while (j < r)
-				a[k++] = a[j++];
+				a[k++] = b[j++];
 			return a;
 		}
 
@@ -176,7 +216,8 @@ public class Sorter {
 		 *            largest
 		 * @return
 		 */
-		@Override public int select(int low, int high, int i) {
+		@Override
+		public int select(int low, int high, int i) {
 
 			while (high > low) {
 				int pivotIndex = partition(low, high);
@@ -191,6 +232,44 @@ public class Sorter {
 			}
 			return numbers[low];
 		}
+	}
+
+	class HeapSort implements SortInterface {
+
+		@Override
+		public int[] sort() {
+			MaxHeap<Integer> heap = new MaxHeap<Integer>(ArrayUtils.toObject(a));
+			heap.build();
+			return null;
+		}
+
+	}
+
+	class CountingSort implements SortInterface {
+		private final int k;
+
+		public CountingSort(int k) {
+			this.k = k;
+		}
+
+		@Override
+		public int[] sort() {
+			int c[] = new int[k];
+
+			for (int i = 0; i < a.length; i++)
+				c[a[i]]++;
+
+			for (int i = 1; i < k; i++)
+				c[i] += c[i - 1];
+
+			int b[] = new int[a.length];
+
+			for (int i = a.length - 1; i >= 0; i--)
+				b[--c[a[i]]] = a[i];
+
+			return b;
+		}
+
 	}
 }
 
@@ -214,21 +293,24 @@ enum PIVOT_STRATEGY implements PivotingStrategy {
 
 	MEDIAN() {
 
-		@Override public int pivot(int[] numbers, int low, int high) {
+		@Override
+		public int pivot(int[] numbers, int low, int high) {
 			return low + (high - low) / 2;
 		}
 
 	},
 	RANDOM() {
 
-		@Override public int pivot(int[] numbers, int low, int high) {
+		@Override
+		public int pivot(int[] numbers, int low, int high) {
 			return random.nextInt(low, high);
 		}
 
 	},
 	MEDIAN_OF_3() {
 
-		@Override public int pivot(int[] numbers, int low, int high) {
+		@Override
+		public int pivot(int[] numbers, int low, int high) {
 			final int middle = low + (high - low) / 2;
 			final double wBegin = numbers[low];
 			final double wMiddle = numbers[middle];

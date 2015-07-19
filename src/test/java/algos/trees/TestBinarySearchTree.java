@@ -21,7 +21,7 @@ import lombok.val;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -303,7 +303,7 @@ public class TestBinarySearchTree {
 			sb.append(" ").append(i);
 		log.debug(sb.toString());
 
-		ArrayUtils.reverse(x);
+		org.apache.commons.lang3.ArrayUtils.reverse(x);
 		assertEquals(Arrays.asList(x), inOrderPrinter.collection());
 		// Second reverse
 		mirroring = MirroringVisitor.of();

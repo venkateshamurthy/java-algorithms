@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 
-import algos.trees.visitors.SizeVisitor;
 import algos.trees.visitors.Visitor;
 
 //Using lombok annotation for log4j handle
@@ -27,14 +26,16 @@ import algos.trees.visitors.Visitor;
  * @author vmurthy
  * 
  */
-@Data//(staticConstructor="of")
+@Data
+// (staticConstructor="of")
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false, of = "value")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
-    public static <Y extends Comparable<Y>> BinarySearchTree<Y> of(){
-        return new BinarySearchTree<Y>();
-    }
+	public static <Y extends Comparable<Y>> BinarySearchTree<Y> of() {
+		return new BinarySearchTree<Y>();
+	}
+
 	static final Logger log = LogManager
 			.getLogger(StringFormatterMessageFactory.INSTANCE);
 
@@ -42,9 +43,11 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	Element<T> root = null;
 	boolean iterative = false;
 	BST bst = new BST();
+	Element.Factory<T> factory = new Element.Factory<T>(comparator);
 
-	@Override public Element<T> add(T value) {
-		Element<T> t = Element.of(comparator, value);
+	@Override
+	public Element<T> add(T value) {
+		Element<T> t = factory.create(value);
 		if (root == null)
 			root = t;
 		size.incrementAndGet();
@@ -55,33 +58,38 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	/**
 	 * Remove
 	 */
-	@Override public Element<T> remove(T value) {
+	@Override
+	public Element<T> remove(T value) {
 		return bst.remove(value);
 	}
 
-	@Override public void clear() {
-		// TODO Auto-generated method stub
+	@Override
+	public void clear() {
 		root.left(root);
 		root.right(root);
 		size.set(0);
 	}
 
-	@Override public Element<T> contains(T tValue) {
+	@Override
+	public Element<T> contains(T tValue) {
 		return bst.contains(tValue);
 	}
 
-	@Override public int size() {
-	    //return new SizeVisitor<T>().visit(root);
+	@Override
+	public int size() {
+		// return new SizeVisitor<T>().visit(root);
 		return bst.size(root);
-		//Tree<T> t = this; 
-		//this.accept((Visitor<T, ?, ?>) SizeVisitor.builder().build());
+		// Tree<T> t = this;
+		// this.accept((Visitor<T, ?, ?>) SizeVisitor.builder().build());
 	}
 
-	@Override public boolean validate(T min, T max) {
+	@Override
+	public boolean validate(T min, T max) {
 		return (root == null) ? true : bst.validate(root, min, max);
 	}
 
-	@Override public int height() {
+	@Override
+	public int height() {
 		return bst.height(root);
 	}
 
@@ -101,11 +109,13 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	 * 
 	 * @see algos.trees.Tree#accept(algos.trees.Visitor)
 	 */
-	@Override public void accept(Visitor<T, ?, ?> visitor) {
+	@Override
+	public void accept(Visitor<T, ?, ?> visitor) {
 		visitor.visit(this);
 	}
 
-	@SuppressWarnings("unchecked") public boolean equals(Object another) {
+	@SuppressWarnings("unchecked")
+	public boolean equals(Object another) {
 		log.debug("Equals..check");
 		if (another.getClass().isInstance(this))
 			return sameTree(this.root(), ((Tree<T>) another).root());
@@ -120,7 +130,6 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	 * @return
 	 */
 	private boolean sameTree(Element<T> u, Element<T> v) {
-		// TODO Auto-generated method stub
 		boolean valueEquals = u.eq(v);
 		if (valueEquals) {
 			if (u.isBachelor() && v.isBachelor())
@@ -140,9 +149,9 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	 * Red black tree
 	 */
 	protected class RBT extends BST {
-		
+
 		protected Element<T> remove(Element<T> h, T tValue) {
-			Element<T> t = Element.of(comparator, tValue);
+			Element<T> t = factory.create(tValue);
 			if (t.lt(h)) {
 				h = moveRedLeft(h);
 				h.left(remove(h.left(), tValue));
@@ -190,8 +199,10 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 
 			return h;// setN(h)
 		}
-		
-		/** Move Red Left     
+
+		/**
+		 * Move Red Left
+		 * 
 		 * <pre>
 		 *                                                                                  Rz                 Rz
 		 *                                                                                 / \                / \
@@ -201,16 +212,18 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 		 *      /   / \            /   / \              /   / \                        / \     / \        / \     / \  
 		 *     B   Rz  y          B   Rz  y            B  <Rz  x(!C)                  R  <Rz >Rz         B  <Bz >Rz
 		 *        / \                / \                      / \                    /                  /
-		 *     <Rz  >Rz           <Rz  >Rz                 >Rz   y                  B                  B 
+		 *     <Rz  >Rz           <Rz  >Rz                 >Rz   y                  B                  B
 		 * 
 		 * 
 		 * </pre>
+		 * 
 		 * @param h
 		 * @return
 		 */
 		private Element<T> moveRedLeft(Element<T> h) {
 			if (h.isRed() && h.left().isBlack() && h.left().left().isBlack()) {
-				h.colorFlip();val x=h.right();
+				h.colorFlip();
+				val x = h.right();
 				if (x.left().isRed()) {
 					h.right(rotateRight(x));
 					h = rotateLeft(h);
@@ -219,20 +232,24 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 			}
 			return h;
 		}
-		/** Move Red Right     
+
+		/**
+		 * Move Red Right
+		 * 
 		 * <pre>
-		 *                                                                           
-		 *                                                                               
+		 * 
+		 * 
 		 *         R(h)               B(h)                !Cx                             
 		 *        / \    Flip color  / \      RRotate(h)  / \      
 		 *      Cx   B   ========>!Cx   R     ========>  R   B(h)     
 		 *      / \ / \            /   / \                  / \                      
 		 *     R       y          R   Bz  y            B       R                     
 		 *                           / \                      / \                  
-		 *                        <z   >z                        y                  
+		 *                        <z   >z                        y
 		 * 
 		 * 
 		 * </pre>
+		 * 
 		 * @param h
 		 * @return
 		 */
@@ -395,9 +412,9 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 			return t;
 		}
 
-		protected Element<T> remove(Element <T> e, final T value) {
-			Element<T> toBeReturned = Element.of(comparator, value);
-			Element<T> t = recursiveFind(e,toBeReturned);
+		protected Element<T> remove(Element<T> e, final T value) {
+			Element<T> toBeReturned = factory.create(value);
+			Element<T> t = recursiveFind(e, toBeReturned);
 			if (t == null)
 				return null;
 			// log.debug("Size before decrement:" + size.get());
@@ -414,8 +431,9 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 			}
 			return toBeReturned;
 		}
+
 		protected Element<T> remove(final T value) {
-			return remove(root,value);
+			return remove(root, value);
 		}
 
 		protected Element<T> recursiveFind(Element<T> e, Element<T> t) {
@@ -432,8 +450,8 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 				return null;
 		}
 
-		@SuppressWarnings("unused") protected Element<T> iterativeFind(
-				Element<T> root, Element<T> t) {
+		@SuppressWarnings("unused")
+		protected Element<T> iterativeFind(Element<T> root, Element<T> t) {
 			Element<T> e = root;
 			if (e == null)
 				return null;
@@ -452,15 +470,14 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 		}
 
 		protected Element<T> contains(T tValue) {
-			return recursiveFind(root, Element.of(comparator, tValue));
+			return recursiveFind(root, factory.create(tValue));
 		}
 
 		protected int size(Element<T> e) {
-			
+
 			return 1 + (e.hasLeft() ? size(e.left()) : 0)
 					+ (e.hasRight() ? size(e.right()) : 0);
-			
-			
+
 		}
 
 		protected int height(Element<T> e) {
@@ -469,8 +486,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 		}
 
 		protected boolean validate(Element<T> e, T min, T max) {
-			Element<T> MIN = Element.of(comparator, min), MAX = Element.of(
-					comparator, max);
+			Element<T> MIN = factory.create(min), MAX = factory.create(max);
 			boolean result = true;
 			if (result && e.hasLeft())
 				result = e.left().gt(MIN) && validate(e.left(), min, e.value());

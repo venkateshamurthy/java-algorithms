@@ -10,24 +10,25 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
+import org.apache.commons.math3.util.Precision;
+//Using lombok annotation for log4j handle
 
 /**
  * @author vmurthy
  * 
  */
 // Log4j Handle creator (from lombok)
-@Log4j2
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MaximumSlidingWindow {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
+	static {
+		//System.setProperty("java.util.logging.config.file","logging.properties");
+		System.setProperty("java.util.logging.SimpleFormatter.format","%1$tF %1$tT [%4$s]: %5$s %n");
+	}
 	int w = 3;
 	int[] a = { 5, 6, 3, 2, 1, 3, 6, 7, -8, -9, 10, 15, -5, 6, 9, 13 };
 	int[] b = new int[a.length - w];
@@ -38,25 +39,28 @@ public class MaximumSlidingWindow {
 			while (!q.isEmpty() && a[i] >= a[q.peekLast()])
 				q.removeLast();
 			q.addLast(i);
-			log.debug(q + " ");
+			log.info(q + " ");
 		}
 
 		for (int i = w; i < a.length; i++) {
 			b[i - w] = a[q.removeFirst()];
 			while (!q.isEmpty() && a[i] >= a[q.peekLast()]) {
-				log.debug("Removing:"+a[q.removeLast()]);
+				log.info("Removing:"+a[q.removeLast()]);
 			}
 			while (!q.isEmpty() && q.peekFirst() <= i - w)
-				log.debug("Removing:"+a[q.removeFirst()]);
+				log.info("Removing:"+a[q.removeFirst()]);
 			q.addLast(i);
-			log.debug(q + " i=" + i + " w=" + (i - w) + " " + b[i - w]);
+			log.info(q + " i=" + i + " w=" + (i - w) + " " + b[i - w]);
 		}
 		b[a.length - 1 - w] = a[q.removeFirst()];
-		log.debug(q + " " + b[a.length - 1 - w]);
+		log.info(q + " " + b[a.length - 1 - w]);
 	}
 
 	public static void main(String[] args) {
 		new MaximumSlidingWindow();
+		double x=0,y=0.1;
+		boolean b=x!=x||y!=y?!(x!=x^y!=y):Precision.equals(x, y,1);
+		log.info("{}",b);
 	}
 
 }

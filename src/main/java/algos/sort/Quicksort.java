@@ -1,10 +1,14 @@
 package algos.sort;
 
-import java.util.Arrays;
-import static algos.utils.Utils.*;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.math3.random.RandomDataGenerator;
+import static algos.utils.Utils.swap;
 
+import java.util.Arrays;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.random.RandomDataGenerator;
+@Slf4j
 public class Quicksort {
 	private int[] numbers;
 	private int number;
@@ -32,12 +36,12 @@ public class Quicksort {
 		//
 		for (int i = 0; i < number; i++) {
 			this.numbers = Arrays.copyOf(values, values.length);
-			System.out.println("quickselect[" + i + "]:"
+			log.info("quickselect[" + i + "]:"
 					+ quickselect(0, number - 1, i));
 		}
 		this.numbers = Arrays.copyOf(values, values.length);
 		quicksort(0, number - 1);
-		System.out.println(ArrayUtils.toString(numbers));
+		log.info(ArrayUtils.toString(numbers));
 	}
 
 	private int partition(int left, int right) {
