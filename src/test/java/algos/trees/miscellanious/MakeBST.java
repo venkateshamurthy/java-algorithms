@@ -50,7 +50,7 @@ public class MakeBST {
 		//Use this data as asserting reference
 		Integer[] data = new Integer[] { 2, 4, 7, 8, 10 };
 		//build the tree in haphazard manner (so no BST now)
-		Element.Factory<Integer> factory=new Element.Factory<Integer>(comparator);
+		Element.Factory<Integer, Element<Integer>> factory=new Element.Factory<>(comparator);
 		root = factory.create(10);
 		
 		root

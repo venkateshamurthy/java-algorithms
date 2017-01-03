@@ -43,7 +43,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 	Element<T> root = null;
 	boolean iterative = false;
 	BST bst = new BST();
-	Element.Factory<T> factory = new Element.Factory<T>(comparator);
+	Element.Factory<T, Element<T>> factory = new Element.Factory<>(comparator);
 
 	@Override
 	public Element<T> add(T value) {

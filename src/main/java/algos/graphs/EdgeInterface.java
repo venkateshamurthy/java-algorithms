@@ -16,4 +16,5 @@ public interface EdgeInterface<T extends Comparable<T>> extends Visitable<T>,Com
 	VertexInterface<T> mate(VertexInterface<T> v);
 	EdgeInterface<T> cost(Double cost);
 	EdgeInterface<T> isDirected(boolean isDirected);
+  EdgeInterface<T> reverse();
 }

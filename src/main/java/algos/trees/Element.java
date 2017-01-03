@@ -229,8 +229,8 @@ public  class  Element<T extends Comparable<T>> {
 		return node.parent();
 	}
 
-	public <E extends Element<T>> E  add(Factory<T> factory, @NonNull T t) {
-		E e = (E)factory.create( t);
+	public <E extends Element<T>> E  add(Factory<T, E> factory, @NonNull T t) {
+		E e = factory.create( t);
 		e.parent(this);
 		if (lt(e))
 			left = e;
@@ -292,6 +292,9 @@ public  class  Element<T extends Comparable<T>> {
 		return left != this && right != this;
 	}
 
+	public boolean hasParent() {
+		return parent != this;
+	}
 	/**
 	 * Simple swap
 	 */
@@ -306,7 +309,7 @@ public  class  Element<T extends Comparable<T>> {
 	 *
 	 * @param <Y>
 	 */
-	public static class Factory<Y extends Comparable<Y>> extends AbstractElementFactory<Y,Element<Y>>{
+	public static class Factory<Y extends Comparable<Y>, E extends Element<Y>> extends AbstractElementFactory<Y,E>{
 
 		public Factory() {
 			super();
@@ -316,8 +319,8 @@ public  class  Element<T extends Comparable<T>> {
 		}
 
 		@Override
-		public Element<Y> create(Y t) {
-			return new Element<Y>(comparator(),t);
+		public E create(Y t) {
+			return (E)new Element<Y>(comparator(),t);
 		}
 	}
 }

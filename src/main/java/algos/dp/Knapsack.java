@@ -1,15 +1,15 @@
 package algos.dp;
 
+import static java.lang.Math.max;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
-
-import lombok.AccessLevel;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Example : this should get us 19 with 2nd, 3rd, 4th and 6th item picked up
@@ -38,61 +38,46 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 public class Knapsack {
-	@Accessors(fluent = true)
-	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-	@ToString(of= {"v", "w"})
-	static class Item {
-		int v, w;
+	static int[] wt = { 6, 4, 5, 1, 9, 7 };
+	static int[] val = { 4, 2, 3, 1, 6, 4 };
 
-		Item(int v, int w) {
-			this.v = v;
-			this.w = w;
-		}
-
-		static Item[] getItems(int[][] vw) {
-			assert vw.length > 0;
-			Item[] items = new Item[vw.length];
-			for (int i = 0; i < items.length; i++)
-				items[i] = new Item(vw[i][0], vw[i][1]);
-			return items;
-		}
-	}
-
-	static Item[] items = Item.getItems(new int[][] { { 0, 0 }, { 6, 4 },
-			{ 4, 2 }, { 5, 3 }, { 3, 1 }, { 9, 6 }, { 7, 4 } });
-
-	static int W = 10;
-	static int[][] V = new int[items.length][W + 1];
-	static boolean[][] keep = new boolean[items.length][W + 1];
-
+	static int W = 18, n = wt.length;
+	static int[][] K = new int[n + 1][W + 1];
+	Map<Integer,Integer>map=new LinkedHashMap<>();
 	private static int knapsack() {
-		for (int i = 1; i < items.length; i++)
-			for (int m = 0; m <= W; m++) {
-				computeIthItem(i, m);
+		log.info(ArrayUtils.toString(wt));
+		log.info(ArrayUtils.toString(val));
+		Deque<Integer> take = new ArrayDeque<>();
+		for (int i = 1; i <= n; i++)
+			for (int w = 1; w <= W; w++) {
+				K[i][w]=K[i-1][w];
+				if(wt[i - 1] <= w )
+					K[i][w]=max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i][w]);
 			}
-
-		Deque<Item> take = new ArrayDeque<>();
-		for (int i = items.length - 1, m = W; m > 0 && i > 0; i--)
-			if (keep[i][m]) {
-				take.addFirst(items[i]);
-				m = m - items[i].w;
+		for (int i = n, w = W; i > 0 && w > 0; i--) {
+			if (K[i][w] != K[i - 1][w]) {//if previos row at the same column is different then it is in
+				take.addFirst(wt[i - 1]);//add that wt[i-1]
+				w -= wt[i - 1];//next reduce the weight
 			}
+		}
+		log.info(printMatrix(K));
 		log.info(ArrayUtils.toString(take));
-
-		return V[items.length - 1][W];
+		return K[wt.length][W];
 
 	}
 
-	private static void computeIthItem(int i, int m) {
-		V[i][m] = V[i - 1][m]; //First assign previous row
-		if (items[i].w <= m	&& 
-			items[i].v + V[i - 1][m - items[i].w] > V[i][m]) {
-			V[i][m] = items[i].v + V[i - 1][m - items[i].w];
-			keep[i][m] = true;
+	private static String printMatrix(int[][] matrix) {
+		StringBuilder sb = new StringBuilder("\n");
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				sb.append(matrix[i][j] + " ");
+			}
+			sb.append("\n");
 		}
+		return sb.toString();
 	}
 
 	public static void main(String[] args) {
-		log.info("Value={}" , knapsack());
+		log.info("Value={}", knapsack());
 	}
 }

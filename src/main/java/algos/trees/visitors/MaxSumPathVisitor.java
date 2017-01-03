@@ -34,97 +34,67 @@ import algos.trees.Tree;
 @Accessors(fluent = true, chain = true)
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class MaxSumPathVisitor<T extends Number & Comparable<T>> implements
-        Visitor<T, Void, List<T>> {
-    public static <Y extends Number & Comparable<Y>> MaxSumPathVisitor<Y> of(
-            Boolean headToTail) {
-        return new MaxSumPathVisitor<Y>(headToTail);
-    }
+public class MaxSumPathVisitor<T extends Number & Comparable<T>> implements Visitor<T, Integer, Deque<T>> {
+	public static <Y extends Number & Comparable<Y>> MaxSumPathVisitor<Y> of() {
+		return new MaxSumPathVisitor<Y>();
+	}
 
-    static final Logger log = LogManager
-            .getLogger(StringFormatterMessageFactory.INSTANCE);
+	static final Logger log = LogManager.getLogger(StringFormatterMessageFactory.INSTANCE);
 
-    Deque<T> queue = new ArrayDeque<T>();
+	Deque<T> collection = new ArrayDeque<T>();
 
-    // We need this collection Deque list for outside access so maintain same
-    // name
-    @NonFinal
-    List<T> collection;
+	@NonFinal
+	static Void v;
 
-    Boolean headToTail;
-    @NonFinal
-    static Void v;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see algos.trees.Visitor#visit(algos.trees.Tree)
-     */
-    @Override
-    public Void visit(Tree<T> t) {
-        visit(t.root());
-        return v;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see algos.trees.Visitor#visit(algos.trees.Element)
-     */
-    @Override
-    public Void visit(Element<T> e) {
-        if (headToTail)
-            queue.addLast(e.value());
-        else
-            queue.addFirst(e.value());
-        if (e.isBachelor())
-            printStack();
-        else {
-            if (e.hasLeft())
-                visit(e.left());
-            if (e.hasRight())
-                visit(e.right());
-        }
-        if (headToTail)
-            queue.removeLast();
-        else
-            queue.removeFirst();
-        return v;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see algos.trees.Visitor#doSomethingOnElement(algos.trees.Element)
-     */
-    @Override
-    public Void doSomethingOnElement(Element<T> e) {
-        throw new UnsupportedOperationException();
-    }
-
-    @NonFinal
-    int maxSum;
-
-    private int sumOfPath() {
-        int sum = 0;
-        for (T t : queue)
-            sum += t.intValue();
-        return sum;
-    }
-
-    /**
+	/*
+	 * (non-Javadoc)
 	 * 
+	 * @see algos.trees.Visitor#visit(algos.trees.Tree)
 	 */
-    private void printStack() {
-        int sum = sumOfPath();
-        if (sum > maxSum) {
-            maxSum = sum;
-            collection = new ArrayList<T>(queue);
-        }
-        StringBuilder sb = new StringBuilder();
-        for (val t : queue)
-            sb.append(t).append(" ");
-        log.debug(sb.toString());
-    }
+	@Override
+	public Integer visit(Tree<T> t) {
+		return visit(t.root());
+	}
+
+	@Override
+	public Integer visit(Element<T> e) {
+		return visit(e, 0);
+	}
+
+	private int visit(Element<T> e, int sum) {
+		collection.clear();
+		sum += e.value().intValue();
+		if (e.isBachelor()) {
+			if (sum > maxSum) {
+				maxSum = sum;
+				Element<T> t = e;
+				collection.addFirst(t.value());
+				while (t.hasParent()) {
+					t=t.parent();
+					collection.addFirst(t.value());
+				}
+			}
+		} else {
+			if (e.hasLeft())
+				visit(e.left(), sum);
+			if (e.hasRight())
+				visit(e.right(), sum);
+		}
+
+		return maxSum;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see algos.trees.Visitor#doSomethingOnElement(algos.trees.Element)
+	 */
+	@Override
+	public Integer doSomethingOnElement(Element<T> e) {
+		throw new UnsupportedOperationException();
+	}
+
+	@NonFinal
+	int maxSum;
 
 }

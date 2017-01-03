@@ -13,7 +13,7 @@ import java.util.Set;
  */
 //Log4j Handle creator (from lombok)
 public interface GraphInterface<T extends Comparable<T>> extends Visitable<T>,Comparable<GraphInterface<T>> {
-	VertexInterface<T> addVertex(T value, Double weight);
+  VertexInterface<T> addVertex(T value, Double weight);
 	EdgeInterface<T> addEdge(T from, T to, Double cost);
 	
 	VertexInterface<T> addVertex(VertexInterface<T> vertex);
@@ -24,4 +24,5 @@ public interface GraphInterface<T extends Comparable<T>> extends Visitable<T>,Co
 	Set<EdgeInterface<T>> edges();
 	List<VertexInterface<T>> adjV(VertexInterface<T> u);
 	List<EdgeInterface<T>> adjE(VertexInterface<T> u);
+  boolean isDirected();
 }

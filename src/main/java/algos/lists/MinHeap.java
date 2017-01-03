@@ -1,117 +1,102 @@
 package algos.lists;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
+import org.springframework.util.Assert;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.util.StringUtils;
-
 /**
- * @authot vmurthy
+ * @author vmurthy
  */
 @Slf4j
 public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
 
-	public MinHeap() {
-		super(new ArrayList<E>(),new MIN_COMPARATOR<E>());
-	}
+  public MinHeap() {
+    super(new ArrayList<E>(), new MIN_COMPARATOR<E>());
+  }
 
+  public MinHeap(final Collection<E> heap) {
+    this();
+    addAll(heap);
+  }
 
-	/**
-	 * A testing program
-	 */
-	public static void main(String[] args) {
-		log.info("{}",parent(0));
-		Heap<String> pq = new MinHeap<String>();
-		pq.add("cat");
-		pq.add("bee");
-		log.info("Smallest is: " + pq.peek());
-		log.info("Smallest again: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Is it empty? : " + pq.isEmpty());
-		pq.add("eagle");
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Is it empty? : " + pq.isEmpty());
-		log.info("Min of empty queue: " + pq.peek());
-		log.info("Remove min of empty queue: " + pq.poll());
-		pq.add("bear");
-		log.info("Smallest is: " + pq.peek());
-		log.info("Smallest again: " + pq.poll());
-		pq.add("cat");
-		pq.add("dog");
-		pq.add("sheep");
-		pq.add("cow");
-		pq.add("eagle");
-		pq.add("bee");
-		pq.add("lion");
-		pq.add("tiger");
-		pq.add("zebra");
-		pq.add("ant");
-		log.info("Bigger example:");
-		log.info("Smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
-		log.info("Next smallest is: " + pq.poll());
+  public MinHeap(final Collection<E> heap, Comparator<E> comparator) {
+    super(new ArrayList<E>(), comparator);
+    addAll(heap);
+  }
 
-		MinHeap<Integer> rs = new MinHeap<Integer>();
-		rs.add(4);
-		rs.add(3);
-		rs.add(1);
-		log.info("Smallest is: " + rs.peek());
-		log.info("Smallest again: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Is it empty? : " + rs.isEmpty());
-		rs.add(5);
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Is it empty? : " + rs.isEmpty());
-		log.info("Min of empty queue: " + rs.peek());
-		log.info("Remove min of empty queue: " + rs.poll());
-		rs.add(10);
-		log.info("Smallest is: " + rs.peek());
-		log.info("Smallest again: " + rs.poll());
-		rs.add(20);
-		rs.add(19);
-		rs.add(18);
-		rs.add(17);
-		rs.add(16);
-		rs.add(15);
-		rs.add(14);
-		rs.add(13);
-		rs.add(12);
-		rs.add(11);
-		log.info("Bigger example:");
-		log.info("Smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
-		log.info("Next smallest is: " + rs.poll());
+  /**
+   * A testing program
+   */
+  public static void main(String[] args) {
+    PriorityQueue<Employee> pq = new PriorityQueue<>(10, new MIN_COMPARATOR<Employee>());
+    MinHeap<Employee> heap = new MinHeap<>();
+    for (int i = 10; i > 0; i -= 2) {
+      heap.offer(new Employee("" + (i - 1), i - 1));
+      heap.offer(new Employee("" + (i), i));
+      pq.offer(new Employee("" + (i - 1), i - 1));
+      pq.offer(new Employee("" + (i), i));
+    }
+    // heap.build();
+    log.info("Java Priority Que:{}", pq);
+    log.info("{}", heap);
 
-		Integer a[] = { 4, 7, 1, 3, 2, 9, 5, 8, 6, 11, 19, 18, 22, 23, 13, 15,
-				12, 21 };
-		int kth = 3;
-		for (int i = 0; i < rs.heap.size(); i++) {
-			rs.add(a[i]);
-			if (i >= kth)
-				log.info("Removed:" + rs.poll());
-			else
-				log.info("Accessed:" + rs.peek());
-		}
-		log.info("The kth largest :" + rs.peek());
-		log.info(StringUtils.arrayToCommaDelimitedString(rs.heap.toArray()));
-	}
+    while (!heap.isEmpty() && !pq.isEmpty()) {
+      Employee heapEmployee, pqEmployee;
+      log.info("{} {}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+      Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+          "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+    }
+    Assert.isTrue(heap.isEmpty() && pq.isEmpty());
+    for (int i = 10; i > 0; i -= 2) {
+      heap.offer(new Employee("" + (i - 1), i - 1));
+      heap.offer(new Employee("" + (i), i));
+      pq.offer(new Employee("" + (i - 1), i - 1));
+      pq.offer(new Employee("" + (i), i));
+    }
+    // heap.build();
+    log.info("Java Priority Que:{}", pq);
+    log.info("{}", heap);
+    // Change Key
+    int index = 2;
+    log.info("Testing change key @index=" + index);
+    heap.changeKey(index, new Employee("" + 3, 0));
+    pq.remove(new Employee("" + 3, 1));
+    pq.add(new Employee("" + 3, 0));
+    Employee heapEmployee, pqEmployee;
+    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+
+    heap.changeKey(1, new Employee("" + 4, -1));
+    pq.remove(new Employee("" + 4, 4));
+    pq.add(new Employee("" + 4, -1));
+    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+  }
+}
+
+@Data
+@Accessors(fluent = true, chain = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+class Employee implements Comparable<Employee> {
+  String name;
+  Integer salary;
+
+  @Override
+  public int compareTo(Employee other) {
+    return salary.compareTo(other.salary);
+  }
 }

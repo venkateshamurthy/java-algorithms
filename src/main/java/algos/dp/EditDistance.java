@@ -26,9 +26,9 @@ public class EditDistance {
 		int[][] distance = new int[str1.length() + 1][str2.length() + 1];
 
 		for (int i = 0; i <= str1.length(); i++)
-			distance[i][0] = i;
+			distance[i][0] = i;//b'cos from 0 to so many characters to be added
 		for (int j = 1; j <= str2.length(); j++)
-			distance[0][j] = j;
+			distance[0][j] = j;//b'cos from 0 to so many characters to be added
 
 		for (int i = 1; i <= str1.length(); i++)
 			for (int j = 1; j <= str2.length(); j++)

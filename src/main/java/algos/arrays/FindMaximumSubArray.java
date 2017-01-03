@@ -2,8 +2,7 @@
  * 
  */
 package algos.arrays;
-
-import java.util.List;
+import static java.lang.Integer.MIN_VALUE;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -27,15 +26,63 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FindMaximumSubArray {
+	public static void main(String[] args){
+		 int[] inputArray=new int[]{1, -2, 3, 10, -4, 7, 2, -5};
+		 System.out.println(findMaxSumSequence(inputArray));
+		 System.out.println(findMaximumSubArray(inputArray,0,inputArray.length-1));
+	}
 	
-	private MaxSum findMaximumCrossingSubArray(List<Integer> list, 
+	/** A Linear time algorithm. */
+	public static MaxSum findMaxSumSequence (int inputArray[]) {
+	    if (inputArray == null || inputArray.length == 0)
+	        throw new IllegalArgumentException("Array is empty");
+	    //assume a max sub sum segment with start and end index and a max sum value
+	    int maxSum = inputArray[0];
+	    int maxStartIndex = 0;
+	    int maxEndIndex = 0;
+	 
+	    int curSum = inputArray[0];
+	 
+	    for (int i = 1; i < inputArray.length; i++)  {
+	    	//If running sum < 0 ; open a new window
+	        if (curSum < 0) {
+	            curSum = 0;
+	            maxStartIndex = i;
+	        }
+	        // Keep adding
+	        curSum += inputArray[i];
+	        // is curSum > maxSum; 
+	        if (curSum > maxSum) {
+	            maxSum = curSum;
+	            maxEndIndex = i;
+	        }
+	    } 
+	    return MaxSum.of(maxStartIndex, maxEndIndex, maxSum);
+	}
+	
+	/** A Logarithmic algorithm.*/
+	public static MaxSum findMaximumSubArray(int[] list, int l, int h) {
+		if (l >= h) {
+			MaxSum ms = MaxSum.of(l,h,list[l]);
+			log.info("NoCross:{}" , ms);
+			return ms;
+		} else {
+			int low = l, high = h, mid = (l +(h-l) / 2);
+			MaxSum  lMaxSum =  findMaximumSubArray(list, low,     mid), 
+					rMaxSum =  findMaximumSubArray(list, mid + 1, high),
+			        cMaxSum =  findMaximumSubArray(list, low, mid, high);
+			return MaxSum.findMax(lMaxSum, rMaxSum, cMaxSum);
+		}
+	}
+	
+	private static MaxSum findMaximumSubArray(int[] list, 
 			final int low, final int mid, final int high) {
 
-		int leftSum = Integer.MIN_VALUE, rightSum = Integer.MIN_VALUE, 
+		int leftSum = MIN_VALUE, rightSum = MIN_VALUE, 
 				cLow = low, cHigh = high;
 		// Left Part
 		for (int i = mid, sum = 0; i >= low; i--) {
-			sum += list.get(i);
+			sum += list[i];
 			if (sum > leftSum) {
 				leftSum = sum;
 				cLow = i;
@@ -44,71 +91,19 @@ public class FindMaximumSubArray {
 
 		// Right Part
 		for (int sum = 0, i = mid + 1; i < high; i++) {
-			sum += list.get(i);
+			sum += list[i];
 			if (sum > rightSum) {
 				rightSum = sum;
 				cHigh = i;
 			}
 		}
 
-		MaxSum ms = MaxSum
-				.of(cLow,cHigh,rightSum != Integer.MIN_VALUE // remember leftSum+rightSum
-													// may overflow when both
-													// are MIN_VALUE
-						&& leftSum != Integer.MIN_VALUE ? (rightSum + leftSum)
-						: Integer.MIN_VALUE);
+		MaxSum ms = MaxSum.of(cLow, cHigh,
+				rightSum != MIN_VALUE && leftSum != MIN_VALUE ? (rightSum + leftSum) : MIN_VALUE);
 		log.info("Cross:{}" , ms);
 		return ms;
 	}
-
-	public MaxSum findMaximumSubArray(List<Integer> list, int l, int h) {
-		if (l >= h) {
-			MaxSum ms = MaxSum.of(l,h,list.get(l));
-			log.info("NoCross:{}" , ms);
-			return ms;
-		} else {
-			int low = l, high = h, mid = ((l + h) / 2);
-			MaxSum lMaxSum =  findMaximumSubArray(list, low,     mid), 
-					rMaxSum = findMaximumSubArray(list, mid + 1, high);
-			MaxSum cMaxSum = findMaximumCrossingSubArray(list, low, mid, high);
-			return MaxSum.findMax(lMaxSum, rMaxSum, cMaxSum);
-		}
-	}
 	
-	public static MaxSum findMaxSumSequence (int inputArray[])
-	{
-	    if (inputArray == null || inputArray.length == 0)
-	        throw new IllegalArgumentException("Array is empty");
-	 
-	    int size = inputArray.length;
-	 
-	    int maxSum = inputArray[0];
-	    int maxStartIndex = 0;
-	    int maxEndIndex = 0;
-	 
-	    int curSum = inputArray[0];
-	    int curStartIndex = 0;
-	 
-	 
-	    for (int i = 1; i < size; i++)
-	    {
-	        if (curSum < 0) {
-	            curSum = 0;
-	            curStartIndex = i;
-	        }
-	 
-	        curSum += inputArray[i];
-	 
-	        if (curSum > maxSum) {
-	            maxSum = curSum;
-	            maxStartIndex = curStartIndex;
-	            maxEndIndex = i;
-	        }
-	    } 
-	 
-	    return MaxSum.of(maxStartIndex, maxEndIndex, maxSum);
-	}
-
 }
 
 @Data(staticConstructor = "of")

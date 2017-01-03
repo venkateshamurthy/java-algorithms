@@ -17,6 +17,34 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+class LIS2 {
+	public List<Integer> findLis(int[] nums) {
+		if (ArrayUtils.isEmpty(nums))
+			return Collections.emptyList();
+		List<Integer> list = new ArrayList<Integer>();
+		for (int num : nums) {
+			int k = Collections.binarySearch(list, num);
+			k = k < 0 ? ~k : k;
+			// Add if binary search returns size
+			if (k == list.size())
+				list.add(k, num);
+			else {
+				//else simply set the kth index
+				list.set(k, num);
+			}
+		}
+		return list;
+	}
+
+	public static void main(String[] args) {
+		int[] da = new int[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
+		System.out.println(new LIS2().findLis(da));
+		Integer[] daI = new Integer[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
+		System.out.println(new LIS(daI));
+
+	}
+}
+
 /**
  * A List based implementation to compute Longest Increasing Subsequence.
  * <p>
@@ -36,8 +64,8 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 @Data
-@EqualsAndHashCode(callSuper=true, of="internalList")
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@EqualsAndHashCode(callSuper = true, of = "internalList")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 	/** An internal list of type Node<E> */
 	List<Node<E>> internalList = new ArrayList<>();
@@ -73,7 +101,7 @@ public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 	protected void reAdjustListWithLinkedElements() {
 		Node<E> node = internalList.get(size() - 1);
 		for (int i = size() - 1; i >= 0; i--, node = node.pointer) {
-			if (get(i) != node) 
+			if (get(i) != node)
 				internalList.set(i, node);
 		}
 	}
@@ -113,8 +141,8 @@ public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 	protected boolean addAndReAdjust(Iterable<? extends E> iterable) {
 		boolean modified = false;
 		for (E e : iterable)
-			modified = addWithoutReAdjust(e)||modified;
-				
+			modified = addWithoutReAdjust(e) || modified;
+
 		reAdjustListWithLinkedElements();
 		return modified;
 	}
@@ -193,8 +221,7 @@ public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 
 	public ListIterator<E> listIterator() {
 		return new ListIterator<E>() {
-			final ListIterator<Node<E>> internalIter = internalList
-					.listIterator();
+			final ListIterator<Node<E>> internalIter = internalList.listIterator();
 
 			@Override
 			public boolean hasNext() {
@@ -244,12 +271,12 @@ public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 	}
 
 	@Data
-	@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
-	@EqualsAndHashCode(callSuper=false,of="value")
-	private static class Node<E extends Comparable<? super E>> implements
-			Comparable<Node<E>> {
+	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+	@EqualsAndHashCode(callSuper = false, of = "value")
+	private static class Node<E extends Comparable<? super E>> implements Comparable<Node<E>> {
 		E value;
-		@NonFinal Node<E> pointer = this;
+		@NonFinal
+		Node<E> pointer = this;
 
 		public Node(E x) {
 			value = x;
@@ -268,8 +295,7 @@ public class LIS<E extends Comparable<? super E>> extends AbstractList<E> {
 		Integer[] da = new Integer[] { 3, 2, 6, 4, 5, 1, 0 };
 		log.info(ArrayUtils.toString(da) + ":->" + new LIS(da));
 
-		da = new Integer[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11,
-				7, 15 };
+		da = new Integer[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
 		log.info(ArrayUtils.toString(da) + ":->" + new LIS(da));
 
 		da = new Integer[] { 7, 2, 8, 1, 3, 4, 10, 6, 9, 5 };

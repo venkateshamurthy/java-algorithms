@@ -47,4 +47,8 @@ public class TestSorter {
 	@Test public void testSelection() {
 		testSort(Sorter.of("selection", a));
 	}
+	
+	@Test public void testHeap() {
+    testSort(Sorter.of("heap", a));
+  }
 }

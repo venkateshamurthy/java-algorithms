@@ -7,17 +7,16 @@ import static algos.utils.Utils.swap;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.random.RandomDataGenerator;
+
+import algos.lists.MaxHeap;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.random.RandomDataGenerator;
-
-import algos.lists.MaxHeap;
 
 /**
  * @author vmurthy
@@ -41,6 +40,9 @@ public class Sorter {
 			return sorter.new MergeSort();
 		else if (name.equals("quick"))
 			return sorter.new QuickSort();
+		else if (name.equals("heap"))
+      return sorter.new HeapSort();
+
 		return sorter.new QuickSort();
 
 	}
@@ -233,9 +235,13 @@ public class Sorter {
 
 		@Override
 		public int[] sort() {
-			MaxHeap<Integer> heap = new MaxHeap<Integer>(ArrayUtils.toObject(a));
-			heap.build();
-			return null;
+			MaxHeap<Integer> heap = new MaxHeap<Integer>(Arrays.asList((ArrayUtils.toObject(a))));
+			for(int i=a.length-1;i>=0;) {
+			  heap.exchange(0,i);
+			  i--;
+			  heap.heapifyDown(0,i);
+			}
+			return ArrayUtils.toPrimitive(heap.getHeap().toArray(new Integer[0]));
 		}
 
 	}

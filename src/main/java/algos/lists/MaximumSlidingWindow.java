@@ -4,6 +4,7 @@
 package algos.lists;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 
 import lombok.AccessLevel;
@@ -12,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.math3.util.Precision;
 //Using lombok annotation for log4j handle
 
 /**
@@ -39,28 +39,26 @@ public class MaximumSlidingWindow {
 			while (!q.isEmpty() && a[i] >= a[q.peekLast()])
 				q.removeLast();
 			q.addLast(i);
-			log.info(q + " ");
+			
 		}
-
+		log.info(q + " ");
 		for (int i = w; i < a.length; i++) {
 			b[i - w] = a[q.removeFirst()];
-			while (!q.isEmpty() && a[i] >= a[q.peekLast()]) {
+			while (!q.isEmpty() && a[i] >= a[q.peekLast()]) 
 				log.info("Removing:"+a[q.removeLast()]);
-			}
+			
 			while (!q.isEmpty() && q.peekFirst() <= i - w)
 				log.info("Removing:"+a[q.removeFirst()]);
 			q.addLast(i);
 			log.info(q + " i=" + i + " w=" + (i - w) + " " + b[i - w]);
 		}
 		b[a.length - 1 - w] = a[q.removeFirst()];
-		log.info(q + " " + b[a.length - 1 - w]);
+		log.info( Arrays.toString(a));
+		log.info( Arrays.toString(b));
 	}
 
 	public static void main(String[] args) {
 		new MaximumSlidingWindow();
-		double x=0,y=0.1;
-		boolean b=x!=x||y!=y?!(x!=x^y!=y):Precision.equals(x, y,1);
-		log.info("{}",b);
 	}
 
 }

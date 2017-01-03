@@ -1,10 +1,11 @@
 package algos.lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author vmurthy
@@ -17,18 +18,14 @@ public class MaxHeap<E extends Comparable<E>> extends AbstractHeap<E> {
 	}
 
 	public MaxHeap() {
-		super();
+		this(new ArrayList<E>());
 	}
 	
-	public MaxHeap(E[] heap) {
-		super(heap);
-	}
 	
 	/**
 	 * A testing program
 	 */
 	public static void main(String[] args) {
-		log.info("{}",parent(0));
 		Heap<String> pq = new MaxHeap<String>();
 		pq.add("cat");
 		pq.add("dog");
