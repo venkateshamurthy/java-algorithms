@@ -151,7 +151,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
       collection.add(s);
 
       while (!Q.isEmpty()) {
-        val u = Q.remove();
+        val u = Q.poll();
 
         for (val v : G.adjV(u)) {
           if (v.visitCleared()) {

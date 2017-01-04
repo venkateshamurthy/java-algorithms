@@ -40,10 +40,10 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
     PriorityQueue<Employee> pq = new PriorityQueue<>(10, new MIN_COMPARATOR<Employee>());
     MinHeap<Employee> heap = new MinHeap<>();
     for (int i = 10; i > 0; i -= 2) {
-      heap.offer(new Employee("" + (i - 1), i - 1));
-      heap.offer(new Employee("" + (i), i));
-      pq.offer(new Employee("" + (i - 1), i - 1));
-      pq.offer(new Employee("" + (i), i));
+      heap.add(new Employee("" + (i - 1), i - 1));
+      heap.add(new Employee("" + (i), i));
+      pq.add(new Employee("" + (i - 1), i - 1));
+      pq.add(new Employee("" + (i), i));
     }
     // heap.build();
     log.info("Java Priority Que:{}", pq);
@@ -57,10 +57,10 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
     }
     Assert.isTrue(heap.isEmpty() && pq.isEmpty());
     for (int i = 10; i > 0; i -= 2) {
-      heap.offer(new Employee("" + (i - 1), i - 1));
-      heap.offer(new Employee("" + (i), i));
-      pq.offer(new Employee("" + (i - 1), i - 1));
-      pq.offer(new Employee("" + (i), i));
+      heap.add(new Employee("" + (i - 1), i - 1));
+      heap.add(new Employee("" + (i), i));
+      pq.add(new Employee("" + (i - 1), i - 1));
+      pq.add(new Employee("" + (i), i));
     }
     // heap.build();
     log.info("Java Priority Que:{}", pq);

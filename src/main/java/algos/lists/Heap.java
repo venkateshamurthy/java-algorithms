@@ -1,15 +1,16 @@
 package algos.lists;
 
-import java.util.Queue;
+import java.util.Collection;
 
-public interface Heap<E extends Comparable<E>> extends Queue<E> {
-  /**
-   * Heapify Down operation
-   * 
-   * @param location
-   *          at which the heapify down occurs
-   */
-  void heapifyDown(int location);
+public interface Heap<E extends Comparable<E>> {
+  boolean contains(Object o);
+  boolean add(E element);
+  boolean remove(Object o);
+  boolean addAll(Collection<? extends E> c);
+  boolean removeAll(Collection<?> c);
+  void clear();
+  E peek();
+  E poll();
 
   /**
    * Heapify Down operation

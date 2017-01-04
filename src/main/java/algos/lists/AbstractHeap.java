@@ -7,11 +7,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.collections4.SetUtils;
 import org.springframework.util.Assert;
 
 import lombok.Data;
@@ -21,12 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Data
 @ToString(includeFieldNames = false, of = { "heap" })
-public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
+public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E> implements Heap<E> {
 
-  protected final List<E> heap;
-
+  /** Serialization id. */
+  private static final long serialVersionUID = 1L;
   protected final Comparator<E> comparator;
-  protected final Map<E, Integer> indexMap = new HashMap<>();
+  //Using a map of values to its index just to get O(1) for value based searches
+  protected final Map<E, Integer> indexMap;
 
   protected static class MIN_COMPARATOR<T extends Comparable<T>> implements Comparator<T> {
     @Override
@@ -43,40 +43,34 @@ public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
   }
 
   public AbstractHeap() {
-    this(new ArrayList<E>(), new MIN_COMPARATOR<E>());
+    super();
+    comparator=new MIN_COMPARATOR<E>();
+    indexMap = new HashMap<>();
   }
 
   public AbstractHeap(E[] heap) {
-    this(new ArrayList<>(Arrays.asList(heap)), new MIN_COMPARATOR<E>());
+    this(Arrays.asList(Objects.requireNonNull(heap)), new MIN_COMPARATOR<E>());
   }
 
   public AbstractHeap(final List<E> heap, Comparator<E> comparator) {
-    this.heap = (heap);
-    this.comparator = comparator;
+    super(Objects.requireNonNull(heap));
+    this.comparator = Objects.requireNonNull(comparator);
+    indexMap = new HashMap<>(heap.size());
     for (int i = 0; i < heap.size(); i++) {
       indexMap.put(heap.get(i), i);
     }
-    build();
-  }
-
-  public Heap<E> build() {
-    for (int i = (size() - 1) >> 1; i >= 0; i--)
+    for (int i = (heap.size() - 1) >> 1; i >= 0; i--)
       heapifyDown(i);
-    return this;
   }
 
-  private boolean compare(int current, int other) {
-    return current >= 0 && current < heap.size() && other >= 0 && other < heap.size()
-        && comparator.compare(heap.get(current), heap.get(other)) < 0;
-  }
 
   @Override
   public void exchange(int posA, int posB) {
-    Assert.isTrue(posA >= 0 && posA < heap.size());
-    Assert.isTrue(posB >= 0 && posB < heap.size());
-    indexMap.put(heap.get(posA), posB);
-    indexMap.put(heap.get(posB), posA);
-    swap(heap, posA, posB);
+    Assert.isTrue(posA >= 0 && posA < size());
+    Assert.isTrue(posB >= 0 && posB < size());
+    indexMap.put(get(posA), posB);
+    indexMap.put(get(posB), posA);
+    swap(this, posA, posB);
   }
 
   @Override
@@ -87,28 +81,6 @@ public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
       location >>= 1;
     }
     return location;
-  }
-
-  @Override
-  public final void heapifyDown(int location) {
-    /**
-     * <pre>
-     * int left = (location << 1) + 1; // index of node i's left child
-     * int right = (location << 1) + 2; // index of node i's right child
-     * int extreme = location; // Find out which is real extreme(i.e min/max)
-     * if (compare(left, location))
-     *   extreme = left;
-     * 
-     * if (compare(right, extreme))
-     *   extreme = right;
-     * 
-     * if (extreme != location) {
-     *   exchange(location, extreme);
-     *   heapifyDown(extreme);
-     * }
-     * </pre>
-     **/
-    heapifyDown(location, size() - 1);
   }
 
   @Override
@@ -129,117 +101,52 @@ public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
   }
 
   @Override
-  public boolean offer(E e) {
-    boolean offered = false;
-    try {
-      offered = add(e);
-    } finally {
-
-    }
-    return offered;
-  }
-
-  @Override
-  public E remove() {
-    return poll();
-  }
-
-  @Override
-  public E element() {
-    return heap.iterator().next();
-  }
-
-  @Override
-  public int size() {
-    return heap.size();
-  }
-
-  @Override
   public boolean contains(Object o) {
     return indexMap.containsKey(o);// heap.contains(o);
   }
 
   @Override
-  public Iterator<E> iterator() {
-    return heap.iterator();
-  }
-
-  @Override
-  public Object[] toArray() {
-    return heap.toArray();
-  }
-
-  @Override
-  public <T> T[] toArray(T[] a) {
-    return heap.toArray(a);
-  }
-
-  @Override
   public boolean remove(Object o) {
-    indexMap.remove(o);
-    return heap.remove(o);
-  }
-
-  @Override
-  public boolean containsAll(Collection<?> c) {
-    return heap.containsAll(c);
+    Integer removedIndex = indexMap.remove(o);
+    return removedIndex != null ? super.remove(removedIndex) : false; // heap.remove(o);
   }
 
   @Override
   public boolean addAll(Collection<? extends E> c) {
-    int index = heap.size();
-    for (E o : c)
-      indexMap.put(o, index++);
-    boolean result = heap.addAll(c);
-
-    if (result)
-      build();
-    return result;
-  }
-
-  @Override
-  public boolean removeAll(Collection<?> c) {
-    for (Object o : c)
-      indexMap.remove(o);
-    return heap.removeAll(c);
-  }
-
-  @Override
-  public boolean retainAll(Collection<?> c) {
-    boolean result = heap.retainAll(c);
-
+    int index = size(); // gather the index before addition
+    boolean result = addAll(c);
     if (result) {
-      indexMap.keySet().retainAll(c);
-      build();
+      for (E o : c)
+        indexMap.put(o, index++); // use the index increment for the position
+      for (int i = (size() - 1) >> 1; i >= 0; i--)
+        heapifyDown(i);
     }
     return result;
   }
 
   @Override
-  public void clear() {
-    heap.clear();
-    indexMap.clear();
+  public boolean removeAll(Collection<?> c) {
+    for (Object o : c) {
+      Integer removedIndex = indexMap.remove(o);
+      if (removedIndex != null)
+        super.remove(removedIndex);
+    }
+    return true;
   }
 
   @Override
-  public boolean isEmpty() {
-    return heap.isEmpty();
-  }
-
-  public E peek() {
-    if (heap.isEmpty())
-      return null;
-    else
-      return heap.get(0);
+  public void clear() {
+    super.clear();
+    indexMap.clear();
   }
 
   public E poll() {
-    if (heap.size() <= 0)
+    if (isEmpty())
       return null;
     else {
-      E val = heap.get(0);
-      heap.set(0, heap.get(heap.size() - 1)); // Move last to position 0
-      heap.remove(heap.size() - 1);
+      E val = get(0);
+      set(0, get(size() - 1)); // Move last to position 0
+      remove(size() - 1);
       indexMap.remove(val);
       heapifyDown(0);
       return val;
@@ -247,25 +154,29 @@ public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
   }
 
   public boolean add(E element) {
-    if (heap.add(element)) {
-      indexMap.put(element, heap.size() - 1);
-      heapifyUp(heap.size() - 1);
+    if (add(element)) {
+      indexMap.put(element, size() - 1);
+      heapifyUp(size() - 1);
       return true;
     } else
       throw new IllegalStateException("Could not add to heap!.Is this bounded/readonly collection?");
   }
 
   public void changeKey(int current, E changedPriorityElement) {
-    Assert.isTrue(current >= 0 && current < heap.size());
-    int comparisonResult = comparator.compare(changedPriorityElement, heap.get(current));
-    heap.set(current, changedPriorityElement);
+    Assert.isTrue(current >= 0 && current < size());
+    int comparisonResult = comparator.compare(changedPriorityElement, get(current));
+    set(current, changedPriorityElement);
     heapify(current, comparisonResult, changedPriorityElement);
   }
 
   public int indexOf(E element) {
     if (!indexMap.containsKey(element))
-      indexMap.put(element, heap.indexOf(element));
+      indexMap.put(element, indexOf(element));
     return indexMap.get(element);
+  }
+
+  protected final void heapifyDown(int location) {
+    heapifyDown(location, size() - 1);
   }
 
   private void heapify(int currentIndex, int upOrDown, E changedPriorityElement) {
@@ -275,7 +186,19 @@ public abstract class AbstractHeap<E extends Comparable<E>> implements Heap<E> {
       heapifyDown(currentIndex);
     } else
       log.warn("Did not heapify! at index {} with the newer value {} " + "due to equal priority of existing element {}",
-          currentIndex, changedPriorityElement, heap.get(currentIndex));
+          currentIndex, changedPriorityElement, get(currentIndex));
+  }
+  
+  private boolean compare(int current, int other) {
+    return current >= 0 && current < size() && other >= 0 && other < size()
+        && comparator.compare(get(current), get(other)) < 0;
+  }
+
+  // Some collection methods which just relies on the decorated heap array list
+  // without additional decorations.
+  
+  public E peek() {
+    return isEmpty()?null:get(0);
   }
 
 }
