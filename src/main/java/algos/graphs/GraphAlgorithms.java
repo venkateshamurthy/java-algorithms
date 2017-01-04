@@ -10,6 +10,7 @@ import org.apache.commons.math3.util.Pair;
 import org.springframework.util.Assert;
 
 import algos.graphs.Graph.Vertex;
+import algos.lists.Heap;
 import algos.lists.MinHeap;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -224,7 +225,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
         }
       }
 
-      MinHeap<VertexInterface<Type>> heap = new MinHeap<>();
+      Heap<VertexInterface<Type>> heap = new MinHeap<>();
       heap.addAll(G.verticies());
       log.info("Heap:{}", heap);
 
@@ -367,7 +368,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
     GraphInterface<Type> G;
     @NonFinal
     Deque<VertexInterface<Type>> collection = new ArrayDeque<>();
-    MinHeap<VertexInterface<Type>> heap = new MinHeap<>();
+    Heap<VertexInterface<Type>> heap = new MinHeap<>();
 
     public Deque<VertexInterface<Type>> visit(Pair<VertexInterface<Type>, VertexInterface<Type>> pairVertex) {
       // Initialize

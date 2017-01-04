@@ -38,7 +38,7 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
    */
   public static void main(String[] args) {
     PriorityQueue<Employee> pq = new PriorityQueue<>(10, new MIN_COMPARATOR<Employee>());
-    MinHeap<Employee> heap = new MinHeap<>();
+    Heap<Employee> heap = new MinHeap<>();
     for (int i = 10; i > 0; i -= 2) {
       heap.add(new Employee("" + (i - 1), i - 1));
       heap.add(new Employee("" + (i), i));

@@ -3,6 +3,7 @@ package algos.lists;
 import java.util.Collection;
 
 public interface Heap<E extends Comparable<E>> {
+  boolean isEmpty();
   boolean contains(Object o);
   boolean add(E element);
   boolean remove(Object o);

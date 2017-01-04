@@ -25,7 +25,10 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
   /** Serialization id. */
   private static final long serialVersionUID = 1L;
   protected final Comparator<E> comparator;
-  //Using a map of values to its index just to get O(1) for value based searches
+  /**
+   * A map that keeps a mapping of value to the array index and is in lock-step
+   * with heap add/remove/modifications. This is for improving performance of value based searches.
+   */
   protected final Map<E, Integer> indexMap;
 
   protected static class MIN_COMPARATOR<T extends Comparable<T>> implements Comparator<T> {
@@ -44,7 +47,7 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
 
   public AbstractHeap() {
     super();
-    comparator=new MIN_COMPARATOR<E>();
+    comparator = new MIN_COMPARATOR<E>();
     indexMap = new HashMap<>();
   }
 
@@ -62,7 +65,6 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
     for (int i = (heap.size() - 1) >> 1; i >= 0; i--)
       heapifyDown(i);
   }
-
 
   @Override
   public void exchange(int posA, int posB) {
@@ -170,8 +172,6 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
   }
 
   public int indexOf(E element) {
-    if (!indexMap.containsKey(element))
-      indexMap.put(element, indexOf(element));
     return indexMap.get(element);
   }
 
@@ -188,7 +188,7 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
       log.warn("Did not heapify! at index {} with the newer value {} " + "due to equal priority of existing element {}",
           currentIndex, changedPriorityElement, get(currentIndex));
   }
-  
+
   private boolean compare(int current, int other) {
     return current >= 0 && current < size() && other >= 0 && other < size()
         && comparator.compare(get(current), get(other)) < 0;
@@ -196,9 +196,9 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
 
   // Some collection methods which just relies on the decorated heap array list
   // without additional decorations.
-  
+
   public E peek() {
-    return isEmpty()?null:get(0);
+    return isEmpty() ? null : get(0);
   }
 
 }
