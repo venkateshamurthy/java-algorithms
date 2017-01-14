@@ -38,46 +38,48 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Knapsack {
-	static int[] wt = { 6, 4, 5, 1, 9, 7 };
-	static int[] val = { 4, 2, 3, 1, 6, 4 };
+  static int[] wt = { 6, 4, 5, 1, 9, 7 };
+  static int[] val = { 4, 2, 3, 1, 6, 4 };
 
-	static int W = 18, n = wt.length;
-	static int[][] K = new int[n + 1][W + 1];
-	Map<Integer,Integer>map=new LinkedHashMap<>();
-	private static int knapsack() {
-		log.info(ArrayUtils.toString(wt));
-		log.info(ArrayUtils.toString(val));
-		Deque<Integer> take = new ArrayDeque<>();
-		for (int i = 1; i <= n; i++)
-			for (int w = 1; w <= W; w++) {
-				K[i][w]=K[i-1][w];
-				if(wt[i - 1] <= w )
-					K[i][w]=max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i][w]);
-			}
-		for (int i = n, w = W; i > 0 && w > 0; i--) {
-			if (K[i][w] != K[i - 1][w]) {//if previos row at the same column is different then it is in
-				take.addFirst(wt[i - 1]);//add that wt[i-1]
-				w -= wt[i - 1];//next reduce the weight
-			}
-		}
-		log.info(printMatrix(K));
-		log.info(ArrayUtils.toString(take));
-		return K[wt.length][W];
+  static int W = 18, n = wt.length;
+  static int[][] K = new int[n + 1][W + 1];
+  Map<Integer, Integer> map = new LinkedHashMap<>();
 
-	}
+  private static int knapsack() {
+    log.info(ArrayUtils.toString(wt));
+    log.info(ArrayUtils.toString(val));
+    Deque<Integer> take = new ArrayDeque<>();
+    for (int i = 1; i <= n; i++)
+      for (int w = 1; w <= W; w++) {
+        K[i][w] = K[i - 1][w];
+        if (wt[i - 1] <= w)
+          K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i][w]);
+      }
+    for (int i = n, w = W; i > 0 && w > 0; i--) {
+      if (K[i][w] != K[i - 1][w]) {// if previos row at the same column is
+                                   // different then it is in
+        take.addFirst(wt[i - 1]);// add that wt[i-1]
+        w -= wt[i - 1];// next reduce the weight
+      }
+    }
+    log.info(printMatrix(K));
+    log.info(ArrayUtils.toString(take));
+    return K[wt.length][W];
 
-	private static String printMatrix(int[][] matrix) {
-		StringBuilder sb = new StringBuilder("\n");
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				sb.append(matrix[i][j] + " ");
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
+  }
 
-	public static void main(String[] args) {
-		log.info("Value={}", knapsack());
-	}
+  private static String printMatrix(int[][] matrix) {
+    StringBuilder sb = new StringBuilder("\n");
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        sb.append(matrix[i][j] + " ");
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
+  }
+
+  public static void main(String[] args) {
+    log.info("Value={}", knapsack());
+  }
 }

@@ -15,9 +15,6 @@ import java.util.Set;
 public interface GraphInterface<T extends Comparable<T>> extends Visitable<T>,Comparable<GraphInterface<T>> {
   VertexInterface<T> addVertex(T value, Double weight);
 	EdgeInterface<T> addEdge(T from, T to, Double cost);
-	
-	VertexInterface<T> addVertex(VertexInterface<T> vertex);
-	EdgeInterface<T> addEdge(VertexInterface<T> from, VertexInterface<T> to, Double cost);
 	EdgeInterface<T> findEdge(T from, T to);
 	EdgeInterface<T> findEdge(VertexInterface<T> from, VertexInterface<T> to);
 	Set<VertexInterface<T>> verticies();

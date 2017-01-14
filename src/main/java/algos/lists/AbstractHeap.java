@@ -1,7 +1,5 @@
 package algos.lists;
 
-import static java.util.Collections.swap;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,15 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.util.Assert;
 
 import lombok.Data;
 import lombok.ToString;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Data
-@ToString(includeFieldNames = false, of = { "heap" })
+@ToString(includeFieldNames = false, of = { "elementData" }, callSuper = true)
 public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E> implements Heap<E> {
 
   /** Serialization id. */
@@ -27,7 +27,8 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
   protected final Comparator<E> comparator;
   /**
    * A map that keeps a mapping of value to the array index and is in lock-step
-   * with heap add/remove/modifications. This is for improving performance of value based searches.
+   * with heap add/remove/modifications. This is for improving performance of
+   * value based searches.
    */
   protected final Map<E, Integer> indexMap;
 
@@ -66,20 +67,20 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
       heapifyDown(i);
   }
 
-  @Override
-  public void exchange(int posA, int posB) {
-    Assert.isTrue(posA >= 0 && posA < size());
-    Assert.isTrue(posB >= 0 && posB < size());
-    indexMap.put(get(posA), posB);
-    indexMap.put(get(posB), posA);
-    swap(this, posA, posB);
+  public void swap(int i, int j) {
+    val elementI = get(i);
+    val elementJ = get(j);
+    indexMap.put(elementI, j);
+    indexMap.put(elementJ, i);
+    set(i, elementJ);
+    set(j, elementI);
   }
 
   @Override
   public final int heapifyUp(int location) {
     Assert.isTrue(location < size());
     while (compare(location, location >> 1)) {
-      exchange(location, location >> 1);
+      swap(location, location >> 1);
       location >>= 1;
     }
     return location;
@@ -97,42 +98,50 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
       extreme = right;
 
     if (extreme != location) {
-      exchange(location, extreme);
+      swap(location, extreme);
       heapifyDown(extreme, limit);
     }
   }
 
   @Override
   public boolean contains(Object o) {
-    return indexMap.containsKey(o);// heap.contains(o);
+    return indexMap.containsKey(o);// super.contains(o);
   }
 
   @Override
   public boolean remove(Object o) {
-    Integer removedIndex = indexMap.remove(o);
-    return removedIndex != null ? super.remove(removedIndex) : false; // heap.remove(o);
+    boolean res = super.remove(o);
+    indexMap.remove(o);
+    return res;
+  }
+
+  public E remove(int index) {
+    E removed = super.remove(index);
+    if (removed != null)
+      indexMap.remove(removed);
+    return removed;
   }
 
   @Override
-  public boolean addAll(Collection<? extends E> c) {
+  public boolean addAll(Collection<? extends E> collection) {
+
+    List<E> list = new ArrayList<>(collection);// just to ensure the order of
+                                               // iteration when adding to map
     int index = size(); // gather the index before addition
-    boolean result = addAll(c);
+    boolean result = super.addAll(list);
     if (result) {
-      for (E o : c)
+      for (E o : list)
         indexMap.put(o, index++); // use the index increment for the position
       for (int i = (size() - 1) >> 1; i >= 0; i--)
         heapifyDown(i);
     }
-    return result;
+    return true;
   }
 
   @Override
   public boolean removeAll(Collection<?> c) {
-    for (Object o : c) {
-      Integer removedIndex = indexMap.remove(o);
-      if (removedIndex != null)
-        super.remove(removedIndex);
-    }
+    super.removeAll(c);
+    indexMap.keySet().removeAll(c);
     return true;
   }
 
@@ -147,16 +156,15 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
       return null;
     else {
       E val = get(0);
-      set(0, get(size() - 1)); // Move last to position 0
-      remove(size() - 1);
-      indexMap.remove(val);
+      swap(0, size() - 1);
+      this.remove(size() - 1);
       heapifyDown(0);
       return val;
     }
   }
 
   public boolean add(E element) {
-    if (add(element)) {
+    if (super.add(element)) {
       indexMap.put(element, size() - 1);
       heapifyUp(size() - 1);
       return true;
@@ -165,14 +173,20 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
   }
 
   public void changeKey(int current, E changedPriorityElement) {
-    Assert.isTrue(current >= 0 && current < size());
+    Assert.isTrue(current >= 0 && current < size(), " current :" + current + " size:" + size());
     int comparisonResult = comparator.compare(changedPriorityElement, get(current));
+    indexMap.put(changedPriorityElement, current);
     set(current, changedPriorityElement);
     heapify(current, comparisonResult, changedPriorityElement);
   }
 
   public int indexOf(E element) {
-    return indexMap.get(element);
+    int result = MapUtils.getInteger(indexMap, element, -1);
+    // Assert.isTrue(result!=-1 && get(result).equals(element) || result==-1 &&
+    // !contains(element),
+    // "heap contains "+element+" is "+contains(element) + " but heap
+    // index="+result);
+    return result;
   }
 
   protected final void heapifyDown(int location) {

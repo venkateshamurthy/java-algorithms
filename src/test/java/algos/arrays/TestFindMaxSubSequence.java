@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ public class TestFindMaxSubSequence {
 	public void test() {
 		FindMaximumSubArray problem = new FindMaximumSubArray();
 		Assert.assertEquals(expectedMaxSum,
-				problem.findMaximumSubArray(list, 0, list.size() - 1));
+				problem.findMaximumSubArray(ArrayUtils.toPrimitive(list.toArray(new Integer[0])), 0, list.size() - 1));
 		Assert.assertEquals(expectedMaxSum, problem.findMaxSumSequence(numbers));
 	}
 }

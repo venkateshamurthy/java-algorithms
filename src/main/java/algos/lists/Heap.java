@@ -3,6 +3,7 @@ package algos.lists;
 import java.util.Collection;
 
 public interface Heap<E extends Comparable<E>> {
+  int size();
   boolean isEmpty();
   boolean contains(Object o);
   boolean add(E element);
@@ -51,11 +52,4 @@ public interface Heap<E extends Comparable<E>> {
    */
   void changeKey(int current, E changedPriorityElement);
 
-  /**
-   * Exchange elements at indexes
-   * 
-   * @param posA
-   * @param posB
-   */
-  void exchange(int posA, int posB);
 }

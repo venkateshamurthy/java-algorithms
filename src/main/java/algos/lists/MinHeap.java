@@ -56,12 +56,13 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
           "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
     }
     Assert.isTrue(heap.isEmpty() && pq.isEmpty());
+    java.util.List<Employee> list = new ArrayList<>();
     for (int i = 10; i > 0; i -= 2) {
-      heap.add(new Employee("" + (i - 1), i - 1));
-      heap.add(new Employee("" + (i), i));
-      pq.add(new Employee("" + (i - 1), i - 1));
-      pq.add(new Employee("" + (i), i));
+      list.add(new Employee("" + (i - 1), i - 1));
+      list.add(new Employee("" + (i), i));
     }
+    heap.addAll(list);
+    pq.addAll(list);
     // heap.build();
     log.info("Java Priority Que:{}", pq);
     log.info("{}", heap);

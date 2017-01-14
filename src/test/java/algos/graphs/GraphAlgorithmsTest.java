@@ -26,22 +26,24 @@ public class GraphAlgorithmsTest {
   @Test
   public void testPrimRoberSedgwick() {
     Graph<String> G = Graph.of(TYPE.UNDIRECTED);
+    G.addEdge("4", "5", 0.35);
+    G.addEdge("4", "7", 0.37);
+    G.addEdge("5", "7", 0.28);
     G.addEdge("0", "7", 0.16);
+    G.addEdge("1", "5", 0.32);
+    G.addEdge("0", "4", 0.38);
     G.addEdge("2", "3", 0.17);
     G.addEdge("1", "7", 0.19);
     G.addEdge("0", "2", 0.26);
-    G.addEdge("5", "7", 0.28);
-    G.addEdge("1", "3", 0.29);
-    G.addEdge("1", "5", 0.32);
-    G.addEdge("2", "7", 0.34);
-    G.addEdge("4", "5", 0.35);
     G.addEdge("1", "2", 0.36);
-    G.addEdge("4", "7", 0.37);
-    G.addEdge("0", "4", 0.38);
+    G.addEdge("1", "3", 0.29);
+    G.addEdge("2", "7", 0.34);
     G.addEdge("6", "2", 0.40);
     G.addEdge("3", "6", 0.52);
     G.addEdge("6", "0", 0.58);
     G.addEdge("6", "4", 0.93);
+    log.info("PrimMST Graph{}",G);;
+
     Set<EdgeInterface<String>> safeEdgesExpected = new HashSet<>();
     safeEdgesExpected.add(Edge.of("0", "7", 0.16));
     safeEdgesExpected.add(Edge.of("1", "7", 0.19));
@@ -53,14 +55,15 @@ public class GraphAlgorithmsTest {
     final double minCost = 1.81d;
     Prim<String> mst = Prim.<String> of(G);
     mst.visit(Vertex.of("0"));
-    log.info("Prim MST {} {}", mst.minSpanningTreeCost(),mst.collection());
-    Assert.assertEquals(minCost, mst.minSpanningTreeCost(), 1e-02);
-    for(val edge:mst.collection()) {
+    log.info("Prim MST {} {}", mst.minSpanningTreeCost(), mst.collection());
+    for (val edge : mst.collection()) {
       safeEdgesExpected.remove(edge);
-      safeEdgesExpected.remove(edge.reverse());//since this is undirected; we can encounter reversed edge also; so try check that
+      safeEdgesExpected.remove(edge.reverse());// since this is undirected; we
+                                               // can encounter reversed edge
+                                               // also; so try check that
     }
-    Assert.assertTrue(safeEdgesExpected.toString(),safeEdgesExpected.isEmpty());
-
+    Assert.assertTrue(safeEdgesExpected.toString(), safeEdgesExpected.isEmpty());
+    Assert.assertEquals(minCost, mst.minSpanningTreeCost(), 1e-02);
   }
 
   // http://algs4.cs.princeton.edu/lectures/44DemoBellmanFord.pdf
@@ -84,7 +87,7 @@ public class GraphAlgorithmsTest {
     G.addEdge("5", "6", 13d);
     G.addEdge("7", "5", 6d);
     G.addEdge("7", "2", 7d);
-    BellmanFord<String> shortestPathFinder = BellmanFord.<String> of(G);
+    BellmanFord<String> shortestPathFinder = new BellmanFord<>(G);
     shortestPathFinder.visit(Pair.create(Vertex.of("0"), Vertex.of("6")));
     log.info("V={}", G.verticies());
     Set<VertexInterface<String>> s = Vertex.of("0,4,5,2,6".split(","));
@@ -118,7 +121,7 @@ public class GraphAlgorithmsTest {
     G.addEdge("5", "6", 13d);
     G.addEdge("7", "5", 6d);
     G.addEdge("7", "2", 7d);
-    Dijkstra<String> shortestPathFinder = Dijkstra.of(G);
+    Dijkstra<String> shortestPathFinder = new Dijkstra<>(G);
     shortestPathFinder.visit(Pair.create(Vertex.of("0"), Vertex.of("6")));
     log.info("V={}", G.verticies());
     Set<VertexInterface<String>> s = Vertex.of("0,4,5,2,6".split(","));

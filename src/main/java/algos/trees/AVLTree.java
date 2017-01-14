@@ -152,57 +152,39 @@ public class AVLTree{
             root = n;
         }
     }
+    
+    private AVLNode<Integer> rotate(AVLNode<Integer> a, int dir) {
+     
+      AVLNode<Integer> b = a.getChild(-dir);//a.right();
+      b.parent(a.parent);
+      
+      a.setChild(-dir,b.getChild(dir));
+
+      if (!a.getChild(-dir).isZombie())
+          a.getChild(-dir).parent = a;
+
+      b.setChild(dir,  a);
+      a.parent = b;
+
+      if (!b.parent.isZombie()) {
+          if (b.parent.getChild(-dir) == a) {
+              b.parent.setChild(-dir, b);
+          } else {
+            b.parent.setChild(dir , b);
+          }
+      }
+
+      setBalance(a, b);
+
+      return b;
+  }
  
     private AVLNode<Integer> rotateLeft(AVLNode<Integer> a) {
- 
-        AVLNode<Integer> b = a.right();
-        b.parent(a.parent);
- 
-        a.right(b.left);
- 
-        if (!a.right.isZombie())
-            a.right.parent = a;
- 
-        b.left = a;
-        a.parent = b;
- 
-        if (!b.parent.isZombie()) {
-            if (b.parent.right == a) {
-                b.parent.right = b;
-            } else {
-                b.parent.left = b;
-            }
-        }
- 
-        setBalance(a, b);
- 
-        return b;
+       return rotate(a, -1);
     }
  
     private AVLNode<Integer> rotateRight(AVLNode<Integer> a) {
- 
-        AVLNode<Integer> b = a.left();
-        b.parent = a.parent;
- 
-        a.left = b.right;
- 
-        if (a.left != null)
-            a.left.parent = a;
- 
-        b.right = a;
-        a.parent = b;
- 
-        if (b.parent != null) {
-            if (b.parent.right == a) {
-                b.parent.right = b;
-            } else {
-                b.parent.left = b;
-            }
-        }
- 
-        setBalance(a, b);
- 
-        return b;
+        return rotate(a, 1);
     }
  
     private AVLNode<Integer> rotateLeftThenRight(AVLNode<Integer> n) {

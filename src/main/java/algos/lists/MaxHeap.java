@@ -117,7 +117,7 @@ public class MaxHeap<E extends Comparable<E>> extends AbstractHeap<E> {
 				log.info("Accessed:" + rs.peek());
 		}
 		log.info("The kth smallest :" + rs.peek());
-		log.info(StringUtils.arrayToCommaDelimitedString(rs.heap
-				.toArray()));
+		log.info(StringUtils.arrayToCommaDelimitedString(rs.toArray()
+				));
 	}
 }

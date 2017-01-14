@@ -1,8 +1,10 @@
 package algos.graphs;
 
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedHashSet;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
@@ -198,7 +200,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
   static class Prim<Type extends Comparable<Type>>
       implements Visitor<VertexInterface<Type>, Void, Set<EdgeInterface<Type>>> {
     public static <Y extends Comparable<Y>> Prim<Y> of(GraphInterface<Y> g) {
-      Assert.isTrue(!g.isDirected(),"Prim MST requires a Undirected graph!");
+      Assert.isTrue(!g.isDirected(), "Prim MST requires a Undirected graph!");
       return new Prim<Y>(g);
     }
 
@@ -212,32 +214,31 @@ public class GraphAlgorithms<T extends Comparable<T>> {
      */
     @NonFinal
     Set<EdgeInterface<Type>> collection = new LinkedHashSet<>();
-    @NonFinal double minSpanningTreeCost=0d;
+    @NonFinal
+    double minSpanningTreeCost = 0d;
 
     @Override
     public Void visit(VertexInterface<Type> s) {
       s.pi(null).weight(0d);
-      // Initialize pi,and distance to INF
       for (VertexInterface<Type> u : G.verticies()) {
-        u=u.weight(INFINITY).pi(null);
+        u = u.weight(INFINITY).pi(null);
         if (u.equals(s)) {
-          u=u.weight(0d);
+          u = u.weight(0d);
         }
       }
 
       Heap<VertexInterface<Type>> heap = new MinHeap<>();
       heap.addAll(G.verticies());
-      log.info("Heap:{}", heap);
+      log.info("Heap:{}", heap.toString());
 
       while (!heap.isEmpty()) {
-        log.info("Min:{} Rest:{}",heap.peek(),heap);
-        val u = heap.poll(); // this is extract first or extract top
-        
+        val u = heap.poll();
         for (val edge : G.adjE(u)) {
-          VertexInterface<Type> v = edge.to();
+          val v = edge.to();
           int index = heap.indexOf(v);
-          if (index!=-1 && edge.cost() < v.weight()) {
-            VertexInterface<Type> temp=Vertex.of(v.value()).pi(u).weight(edge.cost());
+          
+          if (index != -1 && edge.cost() < v.weight()) {
+            val temp = Vertex.of(v.value()).pi(u).weight(edge.cost());
             heap.changeKey(index, temp);
             v.pi(u).weight(edge.cost());
           }
@@ -245,9 +246,9 @@ public class GraphAlgorithms<T extends Comparable<T>> {
       }
       for (val v : G.verticies()) {
         if (v.pi() != null) {
-          val safeEdge=G.findEdge(v.pi(), v);
+          val safeEdge = G.findEdge(v.pi(), v);
           collection.add(safeEdge);
-          minSpanningTreeCost+=safeEdge.cost();
+          minSpanningTreeCost += safeEdge.cost();
         }
       }
       return v_o_i_d;
@@ -255,7 +256,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
   }
 
   @Accessors(fluent = true)
-  @Data(staticConstructor = "of")
+  @Data // (staticConstructor = "of")
   @FieldDefaults(level = AccessLevel.PRIVATE)
   static class EasyDFS<Type extends Comparable<Type>>
       implements Visitor<GraphInterface<Type>, Void, Set<VertexInterface<Type>>> {
@@ -270,12 +271,12 @@ public class GraphAlgorithms<T extends Comparable<T>> {
     }
 
     // depth first search from v
-    private void dfs(GraphInterface<Type> G, VertexInterface<Type> v) {
-      v.startVisit();
-      collection.add(v);
-      for (val w : G.adjV(v)) {
-        if (w.visitCleared()) {
-          dfs(G, w);
+    private void dfs(GraphInterface<Type> G, VertexInterface<Type> u) {
+      u.startVisit();
+      collection.add(u);
+      for (val v : G.adjV(u)) {
+        if (v.visitCleared()) {
+          dfs(G, v);
         }
       }
     }
@@ -359,7 +360,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
   }
 
   @Accessors(fluent = true)
-  @Data(staticConstructor = "of")
+  @Data // (staticConstructor = "of")
   @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
   static class Dijkstra<Type extends Comparable<Type>> {
     /**
@@ -385,11 +386,12 @@ public class GraphAlgorithms<T extends Comparable<T>> {
       heap.addAll(G.verticies());
       while (!heap.isEmpty()) {
         val u = heap.poll();
+        // Assert.isTrue(u.weight() != INFINITY, u + " did not get set with actual weight");
         for (val e : G.adjE(u)) {
           val v = e.to();
-          int index=heap.indexOf(v);
-          if (index!=-1 && v.weight() > (e.cost() + u.weight())) {
-            VertexInterface<Type> temp=Vertex.of(v.value()).pi(u).weight(e.cost() + u.weight());
+          int index = heap.indexOf(v);
+          if (index != -1 && v.weight() > (e.cost() + u.weight())) {
+            VertexInterface<Type> temp = Vertex.of(v.value()).pi(u).weight(e.cost() + u.weight());
             heap.changeKey(index, temp);
             v.pi(u).weight(e.cost() + u.weight());
           }
@@ -404,7 +406,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
   }
 
   @Accessors(fluent = true)
-  @Data(staticConstructor = "of")
+  @Data // (staticConstructor = "of")
   @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
   static class BellmanFord<Type extends Comparable<Type>>
       implements Visitor<Pair<VertexInterface<Type>, VertexInterface<Type>>, Void, Deque<VertexInterface<Type>>> {

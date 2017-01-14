@@ -6,12 +6,15 @@ import static algos.graphs.Color.WHITE;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,21 +39,15 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
     return new Graph<Y>(type);
   }
 
-  /**
-   * A collection of vertices considered in inserted order
-   */
-  Map<VertexInterface<T>, VertexInterface<T>> verticies = new HashMap<>();
-  /**
-   * A collection of edges considered in inserted order
-   */
-  Map<EdgeInterface<T>, EdgeInterface<T>> edges = new HashMap<>();
-  /**
-   * The type of graph {@link TYPE#DIRECTED} or {@link TYPE#UNDIRECTED}
-   */
+  /** A collection of vertices considered in inserted order. */
+  Map<VertexInterface<T>, VertexInterface<T>> verticies = new LinkedHashMap<>();
+  /** A collection of edges considered in inserted order. */
+  Map<EdgeInterface<T>, EdgeInterface<T>> edges = new LinkedHashMap<>();
+  /** The type of graph {@link TYPE#DIRECTED} or {@link TYPE#UNDIRECTED}. */
   TYPE type;
 
-  MultiValueMap<VertexInterface<T>, VertexInterface<T>> endVertices = new LinkedMultiValueMap<VertexInterface<T>, VertexInterface<T>>();
-  MultiValueMap<VertexInterface<T>, EdgeInterface<T>> edgesSourcedFrom = new LinkedMultiValueMap<VertexInterface<T>, EdgeInterface<T>>();
+  MultiValueMap<VertexInterface<T>, VertexInterface<T>> endVertices = new LinkedMultiValueMap<>();
+  MultiValueMap<VertexInterface<T>, EdgeInterface<T>> edgesSourcedFrom = new LinkedMultiValueMap<>();
 
   public Set<VertexInterface<T>> verticies() {
     return verticies.keySet();
@@ -68,8 +65,7 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
    */
   @Override
   public List<VertexInterface<T>> adjV(VertexInterface<T> u) {
-    val result = endVertices.get(u);
-    return result == null ? Collections.<VertexInterface<T>> emptyList() : result;
+    return ListUtils.emptyIfNull(endVertices.get(u));
   }
 
   /**
@@ -80,8 +76,7 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
    */
   @Override
   public List<EdgeInterface<T>> adjE(VertexInterface<T> u) {
-    val result = edgesSourcedFrom.get(u);
-    return result == null ? Collections.<EdgeInterface<T>> emptyList() : result;
+    return ListUtils.emptyIfNull(edgesSourcedFrom.get(u));
   }
 
   /**
@@ -90,8 +85,8 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    for (VertexInterface<T> v : verticies()) {
-      builder.append(v.toString());
+    for (VertexInterface<T> v : edgesSourcedFrom.keySet()) {
+      builder.append(v.value() + " " + edgesSourcedFrom.get(v) + "\n");
     }
     return builder.toString();
   }
@@ -101,35 +96,34 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
     return addVertex(Vertex.of(value).weight(weight));
   }
 
-  @Override
-  public EdgeInterface<T> addEdge(T from, T to, Double cost) {
-    return addEdge(Vertex.of(from), Vertex.of(to), cost);
-  }
-
-  @Override
-  public VertexInterface<T> addVertex(VertexInterface<T> v) {
-    VertexInterface<T> current = verticies.get(v);
-    if (current == null)
+  protected VertexInterface<T> addVertex(VertexInterface<T> v) {
+    if (!verticies.containsKey(v))
       verticies.put(v, v);
     return verticies.get(v);
   }
 
   @Override
-  public EdgeInterface<T> addEdge(VertexInterface<T> from, VertexInterface<T> to, Double cost) {
-    final VertexInterface<T> vFrom = addVertex(from), vTo = addVertex(to);
-    final Edge<T> tempEdge = Edge.of(vFrom, vTo).cost(cost).isDirected(type == TYPE.DIRECTED);
-    if (!edges.containsKey(tempEdge))
-      edges.put(tempEdge, tempEdge);
-    EdgeInterface<T> e = edges.get(tempEdge);
-    endVertices.add(vFrom, vTo);
-    edgesSourcedFrom.add(vFrom, e);
+  public EdgeInterface<T> addEdge(T from, T to, Double cost) {
+    return addEdge(addVertex(from, 0d), addVertex(to, 0d), cost);
+  }
+
+  protected EdgeInterface<T> addEdge(VertexInterface<T> vFrom, VertexInterface<T> vTo, Double cost) {
+    Assert.isTrue(verticies.keySet().containsAll(Arrays.asList(vFrom, vFrom)));
+    EdgeInterface<T> e = Edge.of(vFrom, vTo).cost(cost).isDirected(type == TYPE.DIRECTED);
+
+    if (!edges.containsKey(e)) {
+      edges.put(e, e);
+      endVertices.add(e.from(), e.to());
+      edgesSourcedFrom.add(e.from(), e);
+    }
+    e = edges.get(e);
 
     if (type == TYPE.UNDIRECTED) {
-      Edge<T> reverse = Edge.of(vTo, vFrom).cost(cost).isDirected(type == TYPE.DIRECTED);
+      EdgeInterface<T> reverse = e.reverse();
       if (!edges.containsKey(reverse)) {
         edges.put(reverse, reverse);
-        endVertices.add(vTo, vFrom);
-        edgesSourcedFrom.add(vTo, reverse);
+        endVertices.add(reverse.from(), reverse.to());
+        edgesSourcedFrom.add(reverse.from(), reverse);
       }
     }
     return e;
@@ -259,14 +253,14 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
     public static <Y extends Comparable<Y>> Edge<Y> of(Y from, Y to, double cost) {
       return new Edge<Y>(Vertex.of(from), Vertex.of(to)).cost(cost);
     }
-    public  Edge<T> reverse() {
-      return Edge.of(to,from).cost(cost);
+
+    public Edge<T> reverse() {
+      return Edge.of(to, from).cost(cost);
     }
+
     public String toString() {
       return from.value() + "--(" + cost + ")-->" + to.value();
     }
-
-    
 
     @NonNull
     VertexInterface<T> from, to;

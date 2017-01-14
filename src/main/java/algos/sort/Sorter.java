@@ -6,6 +6,7 @@ package algos.sort;
 import static algos.utils.Utils.swap;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -136,15 +137,15 @@ public class Sorter {
 			return a;
 		}
 
-		protected int[] merge(int[] a, final int leftStart, final int leftEnd,final int rightStart, final int rightEnd) {
-			int i = leftStart, j = rightStart, k = 0;
-			while (i <= leftEnd && j <= rightEnd) 
+		protected int[] merge(int[] a, final int leftS, final int leftE,final int rightS, final int rightE) {
+			int i = leftS, j = rightS, k = 0;
+			while (i <= leftE && j <= rightE) 
 				b[k++] = a[i] <= a[j] ? a[i++] : a[j++];
-			while (i <= leftEnd)
+			while (i <= leftE)
 				b[k++] = a[i++];
-			while (j <= rightEnd)
+			while (j <= rightE)
 				b[k++] = a[j++];
-			System.arraycopy(b, 0, a, leftStart, rightEnd-leftStart+1);
+			System.arraycopy(b, 0, a, leftS, rightE-leftS+1);
 			return a;
 		}
 
@@ -237,11 +238,11 @@ public class Sorter {
 		public int[] sort() {
 			MaxHeap<Integer> heap = new MaxHeap<Integer>(Arrays.asList((ArrayUtils.toObject(a))));
 			for(int i=a.length-1;i>=0;) {
-			  heap.exchange(0,i);
+			  Collections.swap(heap,0,i);
 			  i--;
 			  heap.heapifyDown(0,i);
 			}
-			return ArrayUtils.toPrimitive(heap.getHeap().toArray(new Integer[0]));
+			return ArrayUtils.toPrimitive(heap.toArray(new Integer[0]));
 		}
 
 	}
