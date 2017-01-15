@@ -71,7 +71,6 @@ public  class  Element<T extends Comparable<T>> {
 	@NonNull Comparator<T> comparator;
 	@NonNull @NonFinal T value;
 	@NonFinal Element<T> parent = this, left = this, right = this;
-	
 	/**
 	 * Left Lean Red Black tree changes to BST
 	 * *** START ****
@@ -86,36 +85,36 @@ public  class  Element<T extends Comparable<T>> {
 	public void accept(Visitor<T, ?, ?> visitor) {
 		visitor.visit(this);
 	}
-	public <E extends Element<T>>  E left(){
-		return (E) left;
+	public Element<T> left(){
+		return left;
 	}	
-	public <E extends Element<T>>  E right(){
-		return (E) right;
+	public Element<T> right(){
+		return  right;
 	}
-	public <E extends Element<T>>  E parent(){
-		return (E) parent;
+	public Element<T> parent(){
+		return  parent;
 	}
-	public <E extends Element<T>> int compare(E e) {
+	public  int compare(Element<T>e) {
 		return comparator.compare(value, e.value());
 	}
 
-	public <E extends Element<T>> boolean eq(E e) {
+	public  boolean eq(Element<T>e) {
 		return value.equals(e.value());
 	}
 
-	public <E extends Element<T>> boolean lt(E e) {
+	public  boolean lt(Element<T>e) {
 		return comparator.compare(value, e.value()) < 0;
 	}
 
-	public <E extends Element<T>> boolean le(E e) {
+	public  boolean le(Element<T>e) {
 		return comparator.compare(value, e.value()) <= 0;
 	}
 
-	public <E extends Element<T>>  boolean gt(E e) {
+	public   boolean gt(Element<T>e) {
 		return comparator.compare(value, e.value()) > 0;
 	}
 
-	public <E extends Element<T>> boolean ge(E e) {
+	public  boolean ge(Element<T>e) {
 		return comparator.compare(value, e.value()) >= 0;
 	}
 
@@ -123,19 +122,19 @@ public  class  Element<T extends Comparable<T>> {
 		return left != this || right != this;
 	}
 
-	public <E extends Element<T>> E getChild(int cmp) {
+	public  Element<T>getChild(int cmp) {
 		if (cmp == 0)
-			return (E) this;
+			return  this;
 		else
-			return (E) (cmp < 0 ? left : right);
+			return  (cmp < 0 ? left : right);
 	}
 
-	public <E extends Element<T>> E setChild(int cmp, E child) {
+	public  Element<T>setChild(int cmp, Element<T>child) {
 		if (cmp != 0) {
-			Element<T> e = cmp < 0 ? left(child) : right(child);
+			Element<T> e= cmp < 0 ? left(child) : right(child);
 			child.parent(this);
 		}
-		return (E) this;
+		return  this;
 	}
 
 	public boolean hasLeft() {
@@ -169,8 +168,8 @@ public  class  Element<T extends Comparable<T>> {
 	 * 
 	 * @return The minimum.
 	 */
-	public <E extends Element<T>> E minimum() {
-		E node = (E) this;
+	public  Element<T>minimum() {
+		Element<T>node =  this;
 
 		while (node.left() != node)
 			node = node.left();
@@ -183,8 +182,8 @@ public  class  Element<T extends Comparable<T>> {
 	 * 
 	 * @return The maximum.
 	 */
-	public <E extends Element<T>> E maximum() {
-		E node = (E) this;
+	public  Element<T>maximum() {
+		Element<T>node =  this;
 
 		while (node.right() != node)
 			node = node.right();
@@ -197,11 +196,11 @@ public  class  Element<T extends Comparable<T>> {
 	 * 
 	 * @return The successor; or <code>null</code>.
 	 */
-	public <E extends Element<T>> E successor() {
+	public  Element<T>successor() {
 		if (right != this)
 			return right.minimum();
 
-		E node = (E) this;
+		Element<T>node =  this;
 
 		while (node.isRightChildOfItsParent()) {
 			node = node.parent();
@@ -215,12 +214,12 @@ public  class  Element<T extends Comparable<T>> {
 	 * 
 	 * @return The predecessor; or <code>null</code>.
 	 */
-	public <E extends Element<T>> E  predecessor() {
+	public  Element<T> predecessor() {
 		if (left != this)
 			return left.maximum();
 
 		// else reach a top parent that is a left child
-		E node = (E) this;
+		Element<T>node =  this;
 
 		while (node.isLeftChildOfItsParent()) {
 			node = node.parent();
@@ -229,7 +228,7 @@ public  class  Element<T extends Comparable<T>> {
 		return node.parent();
 	}
 
-	public <E extends Element<T>> E  add(Factory<T, E> factory, @NonNull T t) {
+	public <E extends Element<T>> E add(Factory<T, E> factory, @NonNull T t) {
 		E e = factory.create( t);
 		e.parent(this);
 		if (lt(e))
@@ -279,8 +278,8 @@ public  class  Element<T extends Comparable<T>> {
 	 * 
 	 * @return
 	 */
-	public <E extends Element<T>> E getOnlyChild() {
-		return (E) (left != this ? left : right);
+	public  Element<T>getOnlyChild() {
+		return  (left != this ? left : right);
 	}
 
 	/**

@@ -236,7 +236,6 @@ public class GraphAlgorithms<T extends Comparable<T>> {
         for (val edge : G.adjE(u)) {
           val v = edge.to();
           int index = heap.indexOf(v);
-          
           if (index != -1 && edge.cost() < v.weight()) {
             val temp = Vertex.of(v.value()).pi(u).weight(edge.cost());
             heap.changeKey(index, temp);

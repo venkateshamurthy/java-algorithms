@@ -17,7 +17,7 @@ import algos.trees.Tree;
 public interface Visitor<T extends Comparable<T>, R, C> {
 	R visit(Tree<T> t);
 
-	R visit(Element<T> e);
+	 R visit(Element<T> e);
 
 	R doSomethingOnElement(Element<T> e);
 

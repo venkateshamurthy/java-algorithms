@@ -31,7 +31,7 @@ public class HasPathSumVisitor implements Visitor<Integer, Boolean, Deque<Intege
 	}
 
 	@Override
-	public Boolean visit(Element<Integer> e) {
+	public  Boolean visit(Element<Integer> e) {
 		return visit(e,targetSum);
 	}
 

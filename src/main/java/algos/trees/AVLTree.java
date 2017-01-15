@@ -28,17 +28,17 @@ class  AVLNode<T extends Comparable<T>> extends Element<T> {
     
 	@SuppressWarnings("unchecked")
 	public  AVLNode<T> left(){
-		return super.<AVLNode<T>> left();
+		return (AVLNode<T>) left();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public  AVLNode<T> right(){
-		return super.< AVLNode<T>> right();
+		return (AVLNode<T>) right();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public  AVLNode<T> parent(){
-		return super.<AVLNode<T>> parent();
+		return (AVLNode<T>) parent();
 	}
 	
 	public  AVLNode<T> left(AVLNode<T> t){
@@ -83,7 +83,7 @@ public class AVLTree{
  
                 int cmp=key.compare(n);
                 
-                n = n.getChild(cmp);
+                n = (AVLNode<Integer>) n.getChild(cmp);
  
                 if (n.isZombie()) {
                 	parent.setChild(cmp,factory.create(keyInt));
@@ -115,7 +115,7 @@ public class AVLTree{
         if (!delAVLNode.isZombie()) {
             delAVLNode.value(n.value);
  
-            child = n.getOnlyChild();
+            child = (AVLNode<Integer>) n.getOnlyChild();
  
             if (root.eq(delKeyNode)) {
                 root(child);
@@ -155,7 +155,7 @@ public class AVLTree{
     
     private AVLNode<Integer> rotate(AVLNode<Integer> a, int dir) {
      
-      AVLNode<Integer> b = a.getChild(-dir);//a.right();
+      AVLNode<Integer> b = (AVLNode<Integer>) a.getChild(-dir);//a.right();
       b.parent(a.parent);
       
       a.setChild(-dir,b.getChild(dir));

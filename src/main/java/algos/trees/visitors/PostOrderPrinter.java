@@ -28,7 +28,7 @@ import algos.trees.Tree;
 @Data
 @Accessors(fluent=true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PostOrderPrinter<T extends Comparable<T>> implements Visitor<T,T,List<T>> {
+public class PostOrderPrinter<T extends Comparable<T>> implements Visitor<T, T,List<T>> {
 	static final Logger log = LogManager
 			.getLogger(StringFormatterMessageFactory.INSTANCE);
 	StringBuilder sb = new StringBuilder();
