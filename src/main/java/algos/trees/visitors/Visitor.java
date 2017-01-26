@@ -3,7 +3,8 @@
  */
 package algos.trees.visitors;
 
-import algos.trees.Element;
+import algos.trees.BaseNode;
+import algos.trees.ComparableNode;
 import algos.trees.Tree;
 
 //Using lombok annotation for log4j handle
@@ -14,12 +15,16 @@ import algos.trees.Tree;
  * @author vmurthy
  * 
  */
-public interface Visitor<T extends Comparable<T>, R, C> {
-	R visit(Tree<T> t);
+public interface Visitor<T extends Comparable<T>, N extends BaseNode<N> & ComparableNode<T>, R, C> {
+  default R visit(Tree<T, N> t) {
+      return visit(t.root());
+  }
 
-	 R visit(Element<T> e);
+  R visit(N e);
 
-	R doSomethingOnElement(Element<T> e);
+  default R doSomethingOnElement(N e) {
+    return null;
+  }
 
-	C collection();
+  C collection();
 }

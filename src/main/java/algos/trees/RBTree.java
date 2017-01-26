@@ -1,5 +1,7 @@
 package algos.trees;
 
+import java.util.Comparator;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.val;
@@ -22,10 +24,11 @@ public class RBTree<T extends Number & Comparable<T>> {
   }
 
   public Node<T> insert(Node<T> parent, T data) {
+    Node<T> dataNode=new Node<>(data);
     if (parent.isZombie())
-      return parent = new Node<T>(data).red(true);
+      return parent = dataNode.red(true);
     else {
-      int dir = parent.le(data);
+      int dir = parent.le(dataNode)?0:1;
       int other=~dir&1;
       Node<T> first = parent.link[dir], second = parent.sibling(dir);
       insert(first, data);
@@ -71,84 +74,25 @@ public class RBTree<T extends Number & Comparable<T>> {
   @Data
   @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
   @Accessors(fluent = true, chain = true)
-  private static class Node<T extends Number & Comparable<T>> {
-
+  private static class Node<T extends Number & Comparable<T>>  extends BaseNode<Node<T>> implements ComparableNode<T>{
+    Comparator<T> comparator = (o1,o2)->o1.compareTo(o2);
     public static Node NULL = new Node(null);
     @NonFinal
     Boolean red = true;
-    T data;
+    T value;
     Node<T>[] link = new Node[] { this, this };
 
-    public int lt(T dataValue) {
-      return data.compareTo(dataValue) < 0 ? 0 : 1;
-    }
 
     public boolean isZombie() {
       return link[0] == link[1] && link[0] == this;
     }
 
-    public boolean has(@Range(min = 0, max = 1) int dir) {
-      return link[dir] != null;
-    }
-
-    public int le(T dataValue) {
-      return data.compareTo(dataValue) <= 0 ? 0 : 1;
-    }
-
-    public boolean eq(T dataValue) {
-      return data.compareTo(dataValue) == 0;
-    }
-
-    public int ge(T dataValue) {
-      return data.compareTo(dataValue) >= 0 ? 0 : 1;
-    }
-
-    public boolean lt(Node<T> that) {
-      return data.compareTo(that.data) < 0;
-    }
-
-    public boolean le(Node<T> that) {
-      return data.compareTo(that.data) <= 0;
-    }
-
-    public boolean ge(Node<T> that) {
-      return data.compareTo(that.data) >= 0;
-    }
-
     public boolean hasRed() {
-      return data != null && red;
-    }
-
-    public boolean hasBlack() {
-      return data != null && !red;
-    }
-
-    public int isRed() {
-      return red ? 1 : 0;
-    }
-
-    public int isBlack() {
-      return !red ? 1 : 0;
-    }
-
-    public boolean Null() {
-      return data == null;
-    }
-
-    public Node<T> link(boolean dir) {
-      return dir ? link[1] : link[0];
-    }
-
-    public Node<T> link(int dir) {
-      return dir == 0 ? link[0] : link[1];
+      return value != null && red;
     }
 
     public Node<T> link(boolean dir, Node<T> designate) {
       return link[dir ? 1 : 0] = designate;
-    }
-
-    public Node<T> link(boolean dir, T designate) {
-      return link(dir, new Node(designate));
     }
 
     public Node<T> sibling(int dir) {
@@ -157,6 +101,11 @@ public class RBTree<T extends Number & Comparable<T>> {
     
     public Node<T> sibling(int dir, Node<T> node) {
       return link[~dir&1]=node;
+    }
+
+    @Override
+    public void setValue(T value) {
+      //this.value=value;
     }
 
   }

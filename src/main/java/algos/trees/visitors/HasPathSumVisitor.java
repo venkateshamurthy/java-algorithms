@@ -4,11 +4,13 @@
 package algos.trees.visitors;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import algos.trees.Element;
-import algos.trees.Tree;
+import org.apache.commons.collections.CollectionUtils;
+
+import algos.trees.BSTNode;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
@@ -19,41 +21,26 @@ import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
  */
 // Log4j Handle creator (from lombok)
 @Log4j2
-@Data(staticConstructor = "of")
+@Data//(staticConstructor = "of")
 @Accessors(fluent = true)
-public class HasPathSumVisitor implements Visitor<Integer, Boolean, Deque<Integer>> {
-	Integer targetSum;
-	Deque<Integer> collection = new ArrayDeque<>();
-
+public class HasPathSumVisitor implements BSTVisitor<Integer, Boolean, List<Deque<Integer>>> {
+	int targetSum;
+	List<Deque<Integer>> collection = new ArrayList<Deque<Integer>>();
+	Deque<Integer> temp = new ArrayDeque<>();
 	@Override
-	public Boolean visit(Tree<Integer> t) {
-		return visit(t.root());
-	}
-
-	@Override
-	public  Boolean visit(Element<Integer> e) {
+	public  Boolean visit(BSTNode<Integer> e) {
 		return visit(e,targetSum);
 	}
 
-	private Boolean visit(final Element<Integer> e, final Integer sum) {
-		final Integer amount=sum-e.value();
-		collection.clear();
-		if (e.isBachelor()) {
-			boolean exists = amount <= 0;
-			Element<Integer> t = e;
-			collection.addFirst(t.value());
-			while(t.hasParent()) {
-				t=t.parent();
-				collection.addFirst(t.value());
-			}
-			return exists;
+	private boolean visit(final BSTNode<Integer> e, final int sum) {
+		final int amount=sum - e.value();
+		temp.addFirst(e.value());
+		if (e.isBachelor()&&  amount<=0) {
+		   CollectionUtils.addAll(collection, temp.iterator());
+		   return true;
 		}
+		temp.removeFirst();
 		return e.hasLeft() && visit(e.left(),amount) || e.hasRight() && visit(e.right(),amount);
-	}
-
-	@Override
-	public Boolean doSomethingOnElement(Element<Integer> e) {
-		return null;
 	}
 
 	public HasPathSumVisitor(int targetSum) {

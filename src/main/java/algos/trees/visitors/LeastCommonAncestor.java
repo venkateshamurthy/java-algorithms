@@ -1,17 +1,17 @@
 package algos.trees.visitors;
 
-import algos.trees.Element;
-import algos.trees.Tree;
+import algos.trees.BSTNode;
+import algos.trees.NodeFactory;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class LeastCommonAncestor<T extends Comparable<T>, E extends Element<T>> implements Visitor<T, E, Void> {
-	private Element.Factory<T, E> factory = new Element.Factory<>();
-	private E Null = factory.create(null);
-	private E first;
-	private E second;
+public class LeastCommonAncestor<T extends Comparable<T>> implements BSTVisitor<T,BSTNode<T> , Void> {
+	private NodeFactory<T, BSTNode<T>> factory = (s)->new BSTNode<T>(s);
+	private BSTNode<T> Null = factory.create(null);
+	private BSTNode<T> first;
+	private BSTNode<T> second;
 	private Void collection;
 
 	LeastCommonAncestor(T first, T second) {
@@ -20,34 +20,24 @@ public class LeastCommonAncestor<T extends Comparable<T>, E extends Element<T>> 
 	}
 
 	@Override
-	public E visit(Tree<T> t) {
-		return visit(t.root());
-	}
-
-	@Override
-	public E visit(Element<T> element) {
-		E e = (E) element;
+	public BSTNode<T> visit(BSTNode<T> element) {
+	  BSTNode<T> e = element;
 		if (e.eq(first) || e.eq(second))
 			return e;
-		E left = e.hasLeft() ? visit(e.left()) : Null;
-		E right = e.hasRight() ? visit(e.right()) : Null;
+		BSTNode<T> left = e.hasLeft() ? visit(e.left()) : Null;
+		BSTNode<T> right = e.hasRight() ? visit(e.right()) : Null;
 		if (left != Null && right != Null)
 			return e;
 		return left != Null ? left : right;
 	}
 
-	private E visitInBst(Element<T> root) {
+	private BSTNode<T> visitInBst(BSTNode<T> root) {
 		if (root.gt(first) && root.gt(second) && root.hasLeft())
 			return visitInBst(root.left());
 		else if (root.lt(first) && root.lt(second) && root.hasRight())
 			return visitInBst(root.right());
 		//Just ensure 
-		return root.ge(second) && root.le(first) ? (E) root : Null;
-	}
-
-	@Override
-	public E doSomethingOnElement(Element<T> e) {
-		return null;
+		return root.ge(second) && root.le(first) ?  root : Null;
 	}
 
 }
