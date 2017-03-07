@@ -20,24 +20,12 @@ public class LeastCommonAncestor<T extends Comparable<T>> implements BSTVisitor<
 	}
 
 	@Override
-	public BSTNode<T> visit(BSTNode<T> element) {
-	  BSTNode<T> e = element;
-		if (e.eq(first) || e.eq(second))
-			return e;
-		BSTNode<T> left = e.hasLeft() ? visit(e.left()) : Null;
-		BSTNode<T> right = e.hasRight() ? visit(e.right()) : Null;
-		if (left != Null && right != Null)
-			return e;
-		return left != Null ? left : right;
+	public BSTNode<T> visit(BSTNode<T> root) {
+	  if (root.gt(first) && root.gt(second) && root.hasLeft())
+      return visit(root.left());
+    else if (root.lt(first) && root.lt(second) && root.hasRight())
+      return visit(root.right());
+    //Just ensure 
+    return root.ge(second) && root.le(first) ?  root : Null;
 	}
-
-	private BSTNode<T> visitInBst(BSTNode<T> root) {
-		if (root.gt(first) && root.gt(second) && root.hasLeft())
-			return visitInBst(root.left());
-		else if (root.lt(first) && root.lt(second) && root.hasRight())
-			return visitInBst(root.right());
-		//Just ensure 
-		return root.ge(second) && root.le(first) ?  root : Null;
-	}
-
 }

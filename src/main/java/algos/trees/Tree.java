@@ -31,11 +31,16 @@ public interface Tree<T extends Comparable<T>, N extends BaseNode<N> & Comparabl
     N t = contains(toBeReturned.value());
     if (t == null)  return null;
     if (t.isBachelor()) t.becomeZombie();
-    else {
-      N successor = t.hasBoth() ? t.successor() : t;
+    else if(t.hasBoth()) {
+      N successor = t.successor();
       t.setValue(successor.value());
-      successor.attachTheOnlyChildToItsGranny();
-      if (successor.isBachelor() && successor != t) successor.becomeZombie();
+      if(successor!=t) {
+        successor.attachTheOnlyChildToItsGranny();
+        successor.becomeZombie();
+      }
+    } else {
+      t.attachTheOnlyChildToItsGranny();
+      t.becomeZombie();
     }
     size.decrementAndGet();
     return toBeReturned;
@@ -49,14 +54,14 @@ public interface Tree<T extends Comparable<T>, N extends BaseNode<N> & Comparabl
     return 1 + Math.max(e.hasLeft() ? height(e.left()) : 0, e.hasRight() ? height(e.right()) : 0);
   }
   
-  default boolean sameNodes(N thisNode, N thatNode) {
-    boolean result = Objects.equals(thisNode.value(), thatNode.value());
+  default boolean sameNodes(N here, N there) {
+    boolean result = Objects.equals(here.value(), there.value());
     boolean leftResult= result &&
-        (!thisNode.hasLeft() && !thatNode.hasLeft() ||
-        thisNode.hasLeft() && thatNode.hasLeft() && sameNodes(thisNode.left,thatNode.left));
-    boolean rightResult= result  && 
-        (!thisNode.hasRight() && !thatNode.hasRight() ||
-        thisNode.hasRight() && thatNode.hasRight() && sameNodes(thisNode.right,thatNode.right));
+        (!here.hasLeft() && !there.hasLeft() ||
+        here.hasLeft() && there.hasLeft() && sameNodes(here.left,there.left));
+    boolean rightResult= leftResult  && 
+        (!here.hasRight() && !there.hasRight() ||
+        here.hasRight() && there.hasRight() && sameNodes(here.right,there.right));
     return result = result && leftResult && rightResult;
   }
 

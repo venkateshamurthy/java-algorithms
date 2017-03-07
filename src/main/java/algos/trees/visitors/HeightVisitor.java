@@ -14,14 +14,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
-
-/**
- * @author vmurthy
- * 
- */
-// Log4j Handle creator (from lombok)
-@Log4j2
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false)

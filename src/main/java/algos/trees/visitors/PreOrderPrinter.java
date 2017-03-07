@@ -23,9 +23,9 @@ public class PreOrderPrinter<T extends Comparable<T>> implements BSTVisitor<T,T,
 	List<T> collection =new ArrayList<T>();
 	
 	@Override public T visit(BSTNode<T> e) {
-		T value;
+		T value=e.value();
 		// N-L-R
-		value =doSomethingOnElement(e);
+		collection.add(e.value());
 		if (e.hasLeft()) {
 			visit(e.left());
 		}
@@ -33,11 +33,6 @@ public class PreOrderPrinter<T extends Comparable<T>> implements BSTVisitor<T,T,
 			visit(e.right());
 		}
 		return value;
-	}
-
-	@Override public T doSomethingOnElement(BSTNode<T> e) {
-		collection.add(e.value());
-		return e.value();
 	}
 
 }

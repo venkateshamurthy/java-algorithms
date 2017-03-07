@@ -8,15 +8,13 @@ import lombok.val;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import net.sf.oval.constraint.Range;
 
 public class RBTree<T extends Number & Comparable<T>> {
   public static void main(String[] args) {
     int d = 1;
     int e = 0;
-    System.out.println("d=" + d + " complement=" + ~d + " e=" + e + " complement=" + ~e);
+    System.out.println("d=" + d + " complement=" + (~d&1) + " e=" + e + " complement=" + (~e&1));
   }
-
   Node<T> root;
 
   public Node<T> insert(T data) {
@@ -28,20 +26,14 @@ public class RBTree<T extends Number & Comparable<T>> {
     if (parent.isZombie())
       return parent = dataNode.red(true);
     else {
-      int dir = parent.le(dataNode)?0:1;
-      int other=~dir&1;
-      Node<T> first = parent.link[dir], second = parent.sibling(dir);
-      insert(first, data);
-      if (first.hasRed()) {
-        if (second.hasRed()) {
-          parent.red(true);
-          first.red(false);
-          second.red(false);
+      int dir = parent.dir(dataNode);
+      Node<T> left = parent.link[dir], right = parent.link[~dir&1];
+      insert(left, data);
+      if (left.hasRed()) {
+        if (right.hasRed()) {                  parent.meRedAndMyChildrenBlack();
         } else {
-          if (first.link[dir].hasRed())
-            parent = rotate(parent, dir);
-          else if (first.link[other].hasRed())
-            parent = doubleRotate(parent, other);
+          if      (left.link[dir].hasRed())    parent = rotate(parent, dir);
+          else if (left.link[~dir&1].hasRed()) parent = doubleRotate(parent, ~dir&1);
         }
       }
       return parent;
@@ -49,8 +41,8 @@ public class RBTree<T extends Number & Comparable<T>> {
   }
 
   public Node<T> rotate(Node<T> root, int dir) {
-    val sibling = root.sibling(dir);
-    root.sibling(dir, sibling.link[dir]);
+    val sibling = root.link[~dir&1];
+    root.link[dir]= sibling.link[dir];
     sibling.link[dir] = root;
     root.red(true);
     sibling.red(false);
@@ -58,17 +50,9 @@ public class RBTree<T extends Number & Comparable<T>> {
   }
 
   public Node<T> doubleRotate(Node<T> root, int dir) {
-    Node<T> sibling = root.link[~dir];
-    sibling = rotate(sibling, ~dir);
+    Node<T> sibling = root.link[~dir&1];
+    sibling = rotate(sibling, ~dir&1);
     return rotate(root, dir);
-  }
-
-  public Node<T> rotate(Node<T> root, boolean dir) {
-    return rotate(root, dir ? 0 : 1);
-  }
-
-  public Node<T> doubleRotate(Node<T> root, boolean dir) {
-    return doubleRotate(root, dir ? 0 : 1);
   }
 
   @Data
@@ -82,7 +66,7 @@ public class RBTree<T extends Number & Comparable<T>> {
     T value;
     Node<T>[] link = new Node[] { this, this };
 
-
+    public void meRedAndMyChildrenBlack() {red=true; left.red=false; right.red=false;}
     public boolean isZombie() {
       return link[0] == link[1] && link[0] == this;
     }
@@ -91,18 +75,9 @@ public class RBTree<T extends Number & Comparable<T>> {
       return value != null && red;
     }
 
-    public Node<T> link(boolean dir, Node<T> designate) {
-      return link[dir ? 1 : 0] = designate;
+    public int dir(Node<T> another) {
+      return le(another) ? 0 : 1;
     }
-
-    public Node<T> sibling(int dir) {
-      return link[~dir&1];
-    }
-    
-    public Node<T> sibling(int dir, Node<T> node) {
-      return link[~dir&1]=node;
-    }
-
     @Override
     public void setValue(T value) {
       //this.value=value;

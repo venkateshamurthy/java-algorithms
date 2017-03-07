@@ -34,13 +34,9 @@ public class PostOrderPrinter<T extends Comparable<T>> implements BSTVisitor<T, 
 		if (e.hasRight()) {
 			visit(e.right());
 		}
-		value =doSomethingOnElement(e);
-		return value;
-	}
-
-	@Override public T doSomethingOnElement(BSTNode<T> e) {
+		value =e.value();
 		collection.add(e.value());
-		return e.value();
+		return value;
 	}
 
 }

@@ -85,7 +85,8 @@ public class MakeBST {
         if (e.hasLeft()) {
           visit(e.left());
         }
-        val value = doSomethingOnElement(e);
+        e.value(list.get(i++));
+        val value = e.value();
 
         if (e.hasRight()) {
           visit(e.right());
@@ -93,11 +94,6 @@ public class MakeBST {
         return value;
       }
 
-      @Override
-      public Integer doSomethingOnElement(BSTNode<Integer> e) {
-        e.value(list.get(i++));
-        return e.value();
-      }
 
       @Override
       public Void collection() {

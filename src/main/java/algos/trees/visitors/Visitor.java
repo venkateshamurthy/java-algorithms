@@ -16,15 +16,12 @@ import algos.trees.Tree;
  * 
  */
 public interface Visitor<T extends Comparable<T>, N extends BaseNode<N> & ComparableNode<T>, R, C> {
+  
   default R visit(Tree<T, N> t) {
       return visit(t.root());
   }
 
   R visit(N e);
-
-  default R doSomethingOnElement(N e) {
-    return null;
-  }
 
   C collection();
 }

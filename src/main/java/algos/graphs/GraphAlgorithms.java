@@ -1,10 +1,10 @@
 package algos.graphs;
 
 import java.util.ArrayDeque;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashSet;
-import java.util.PriorityQueue;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -293,14 +293,14 @@ public class GraphAlgorithms<T extends Comparable<T>> {
    * 			DFS-VISIT(G,u)
    * 			
    * 		DFS-VISIT(G, u)
-   * 		u.d = time++ //discovered
-   * 		u.color =  GRAY
-   * 		for each v in G.Adj[u] // explore edge u,v
-   * 			if v.color == WHITE
-   * 				v.pi = u
-   * 				DFS-VISIT(G, v)
-   * 		u.color = BLACK // blacken u; it is finished
-   * 		u.f = time++ //finished
+     * 		u.d = time++ //discovered
+     * 		u.color =  GRAY
+     * 		for each v in G.Adj[u] // explore edge u,v
+     * 			if v.color == WHITE
+     * 				v.pi = u
+     * 				DFS-VISIT(G, v)
+     * 		u.color = BLACK // blacken u; it is finished
+     * 		u.f = time++ //finished
    * </pre>
    * 
    * @author vemurthy
@@ -356,6 +356,25 @@ public class GraphAlgorithms<T extends Comparable<T>> {
       // U is colored black (meaning end visited) and time stamped
       u.endVisit().finishedState(++time);
     }
+  }
+  
+  @Accessors(fluent = true)
+  @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  static class AllSimplePathsBetween2Nodes<Type extends Comparable<Type>>
+      implements Visitor<GraphInterface<Type>, Void, List<List<VertexInterface<Type>>>> {
+
+    List<List<VertexInterface<Type>>> collection = new ArrayList<>();
+
+    @Override
+    public Void visit(GraphInterface<Type> g) {
+      return null;
+    }
+    
+    private void dfsVisit(GraphInterface<Type> g ) {
+      
+    }
+
   }
 
   @Accessors(fluent = true)

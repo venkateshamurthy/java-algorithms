@@ -68,15 +68,14 @@ public class FindMaximumSubArray {
 			return ms;
 		} else {
 			int low = l, high = h, mid = (l +(h-l) / 2);
-			MaxSum  lMaxSum =  findMaximumSubArray(list, low,     mid), 
-					rMaxSum =  findMaximumSubArray(list, mid + 1, high),
+			MaxSum  lMaxSum =  findMaximumSubArray(list, low,      mid), 
+					    rMaxSum =  findMaximumSubArray(list, mid + 1,  high),
 			        cMaxSum =  findMaximumSubArray(list, low, mid, high);
 			return MaxSum.findMax(lMaxSum, rMaxSum, cMaxSum);
 		}
 	}
 	
-	private static MaxSum findMaximumSubArray(int[] list, 
-			final int low, final int mid, final int high) {
+	private static MaxSum findMaximumSubArray(int[] list,  int low, int mid, int high) {
 
 		int leftSum = MIN_VALUE, rightSum = MIN_VALUE, 
 				cLow = low, cHigh = high;

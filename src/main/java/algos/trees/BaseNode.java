@@ -18,7 +18,6 @@ public abstract class BaseNode<N extends BaseNode<N>> {
   @SuppressWarnings("unchecked")
   N here=(N)this;
   @NonFinal @NonNull N parent = here, left = here, right = here;
-  
   public void swapChildrenPosition()       { N temp=left; left=right; right=temp;}
   public boolean isZombie()                { return here==parent && here==left && left==right; }
   public boolean hasParent()               { return parent!=here; }
@@ -30,14 +29,11 @@ public abstract class BaseNode<N extends BaseNode<N>> {
   public boolean hasBoth()                 { return left  != here && right != here;}
   public boolean isLeftChildOfItsParent()  { return (parent != here) && parent.left  == here;}
   public boolean isRightChildOfItsParent() { return (parent != here) && parent.right == here; }
-  public N getOnlyChild()                  { return  (left != here ? left : right);}
+  public N getOnlyChild()                  { return (left != here ? left : right);}
   public N getChild(int cmp)               { return  cmp==0 ? here : (cmp < 0 ? left : right); }
 
   public void becomeZombie() {
-    if (isLeftChildOfItsParent())
-      parent.left(parent);
-    else
-      parent.right(parent);
+    
     if(hasLeft()) {
       N leftHead=left;
       leftHead.parent(leftHead);
@@ -46,7 +42,11 @@ public abstract class BaseNode<N extends BaseNode<N>> {
       N rightHead=right;
       rightHead.parent(rightHead);
     }
-    this.parent = this.left = this.right = null;
+    if (isLeftChildOfItsParent())
+      parent.left(parent);
+    else
+      parent.right(parent);
+    this.parent = this.left = this.right = here;
   }
   
   public  N setChild(int cmp, N child) {
@@ -108,8 +108,8 @@ class RedBlack<T extends Comparable<T>> extends BaseNode<RedBlack<T>> implements
   }
   public boolean isRed() {return parent!=here && color==RED;}
   public boolean isBlack() {return parent!=here && color==BLACK;}
-  public Boolean colorFlip() {left.color(!left.color);right.color=!right.color;return color=!color;}
-  
+  public boolean colorFlip() {left.colorFlip();right.colorFlip();return colorFlip();}
+
   public void setValue(T value) {
    this.value(value);
   }

@@ -1,6 +1,5 @@
 package algos.lists;
 
-import java.lang.reflect.Array;
 import java.util.Iterator;
 
 import lombok.AccessLevel;
@@ -128,10 +127,10 @@ public class SingleLinkedList<E> implements List<E> {
 			return right == this;
 		}
 
-		public  SingleLinkedElement reverse(final SingleLinkedElement<T> head) {
-			SingleLinkedElement tail = null;
-			for (SingleLinkedElement current = head; current != null;) {
-				SingleLinkedElement next = current.right();
+		public  SingleLinkedElement<T> reverse(final SingleLinkedElement<T> head) {
+			SingleLinkedElement<T> tail = null;
+			for (SingleLinkedElement<T> current = head; current != null;) {
+				SingleLinkedElement<T> next = current.right();
 				current.right = tail;
 				tail = current; //advance tail to current
 				current = next; //advance current to next

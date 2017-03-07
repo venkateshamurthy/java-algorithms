@@ -46,19 +46,13 @@ public class LevelOrderPrinter<T extends Comparable<T>> implements BSTVisitor<T,
 		if(e1!=null)queue.add(e1);
 		while (!queue.isEmpty()) {
 			BSTNode<T> e = queue.poll();
-			doSomethingOnElement(e);
+			collection.add(e.value());
 			if (e.hasLeft())
 				queue.add(e.left());
 			if (e.hasRight())
 				queue.add(e.right());
 		}
 		return null;
-	}
-
-	@Override public T doSomethingOnElement(BSTNode<T> e) {
-		T value = e.value();
-		collection.add(value);
-		return value;
 	}
 
 }

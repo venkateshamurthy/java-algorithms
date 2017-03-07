@@ -36,16 +36,14 @@ public class MaxSumPathVisitor<T extends Number & Comparable<T>> implements BSTV
 	}
 
 	private int visit(BSTNode<T> e, int sum) {
-		collection.clear();
+		collection.addFirst(e.value());
 		sum += e.value().intValue();
 		if (e.isBachelor()) {
 			if (sum > maxSum) {
 				maxSum = sum;
 				BSTNode<T> t = e;
-				collection.addFirst(t.value());
 				while (t.hasParent()) {
 					t=t.parent();
-					collection.addFirst(t.value());
 				}
 			}
 		} else {
@@ -54,7 +52,7 @@ public class MaxSumPathVisitor<T extends Number & Comparable<T>> implements BSTV
 			if (e.hasRight())
 				visit(e.right(), sum);
 		}
-
+		collection.removeFirst();
 		return maxSum;
 	}
 
