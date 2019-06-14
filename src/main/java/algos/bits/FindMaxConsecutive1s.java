@@ -46,7 +46,11 @@ public class FindMaxConsecutive1s {
   }
 
   public static void main(String[] args) {
-    BitSet bitset = BitSet.valueOf();
+    BitSet bitset = new BitSet(16);
+    for(int i = 0; i < 16; i++) {
+         if((i % 2) == 0) bitset.set(i);
+         if((i % 5) != 0) bitset.set(i);
+    }
     log.debug(bitset.size() + " " + bitset.toString() + " " + findMax1s(bitset)+" "+countConsecutiveOnes(255));
 
   }

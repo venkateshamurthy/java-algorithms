@@ -26,21 +26,25 @@ class LIS2 {
 			int k = Collections.binarySearch(list, num);
 			k = k < 0 ? ~k : k;
 			// Add if binary search returns size
-			if (k == list.size())
+			if (k == list.size()) {
 				list.add(k, num);
-			else {
+				System.out.println("Added "+num+" at k="+k);
+			} else {
 				//else simply set the kth index
 				list.set(k, num);
+				System.out.println("Set "+num+" at k="+k);
 			}
 		}
 		return list;
 	}
 
 	public static void main(String[] args) {
-		int[] da = new int[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
-		System.out.println(new LIS2().findLis(da));
-		Integer[] daI = new Integer[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
-		System.out.println(new LIS(daI));
+		int[] da2 = new int[] { 0, 8, 4, 2, 14, 1, 9, 13, 3, 11, 7, 15 };
+		System.out.println(new LIS2().findLis(da2));
+		//int[] da = new int[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
+		//System.out.println(new LIS2().findLis(da));
+		//Integer[] daI = new Integer[] { 0, 8, 4, 12, 2, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
+		//System.out.println(new LIS(daI));
 
 	}
 }

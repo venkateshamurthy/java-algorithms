@@ -22,21 +22,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostOrderPrinter<T extends Comparable<T>> implements BSTVisitor<T, T,List<T>> {
 	StringBuilder sb = new StringBuilder();
-	List<T> collection =new ArrayList<T>();
-	
+	List<T> collection = new ArrayList<T>();
 	@Override public T visit(BSTNode<T> e) {
-		T value;
 		// L-R-N
-		
 		if (e.hasLeft()) {
 			visit(e.left());
 		}
 		if (e.hasRight()) {
 			visit(e.right());
 		}
-		value =e.value();
 		collection.add(e.value());
-		return value;
+		return e.value();
 	}
 
 }

@@ -254,7 +254,7 @@ public class TestBinarySearchTree {
 	  root.left.left.left(3).right(-2);root.left.right.right(1);
 	  
 	  
-    Assert.assertTrue(3==new CountOfPathsHavingAGivenSum(18).visit(tree));
+    Assert.assertEquals(1, new CountOfPathsHavingAGivenSum(18).visit(tree).intValue());
   }
 
 	@Test

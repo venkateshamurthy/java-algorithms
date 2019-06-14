@@ -54,17 +54,17 @@ public class WordMatrix2 implements Backtracker<State> {
       solution = new int[matrix.length][matrix[0].length];
     }
 
-    boolean validCell() {
+    private boolean validCell() {
       return validCell(row, col);
     }
-
-    boolean validCell(int row, int col) {
+    private boolean untouchedCell() { return solution[row][col] == 0;}
+    private boolean validCell(int row, int col) {
       return row >= 0 && row < matrix.length && col >= 0 && col <= matrix[0].length;
     }
 
     @Override
     public boolean isValid() {
-      boolean unsolvedCell = validCell() && solution[row][col] == 0;
+      boolean unsolvedCell = validCell() && untouchedCell();
       boolean matched = validCell() && index < word.length() && word.charAt(index) == matrix[row][col];
       return unsolvedCell && matched;
     }
@@ -88,10 +88,7 @@ public class WordMatrix2 implements Backtracker<State> {
 
     @Override
     public State createMemento() {
-      State copy = new State(matrix, word);
-      copy.col = col;
-      copy.row = row;
-      copy.index = index;
+      State copy = new State(matrix, word).mutate(row, col, index);
       copy.path = path;
       for (int i = 0; i < solution.length; i++) {
         System.arraycopy(solution[i], 0, copy.solution[i], 0, solution[i].length);
@@ -101,9 +98,7 @@ public class WordMatrix2 implements Backtracker<State> {
 
     @Override
     public State restoreMemento(State copy) {
-      col = copy.col;
-      row = copy.row;
-      index = copy.index;
+      mutate(copy.row, copy.col, copy.index);
       path = copy.path;
       for (int i = 0; i < solution.length; i++) {
         System.arraycopy(copy.solution[i], 0, solution[i], 0, solution[i].length);

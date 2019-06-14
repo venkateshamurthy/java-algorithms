@@ -71,14 +71,14 @@ public class StepsToOne {
 
     @Getter @NoArgsConstructor
     private static class Decrementer implements ConditionalUnaryOperator<Integer> {
-        private final IntUnaryOperator reducer = i -> i-1;
-        private final IntPredicate predicate = i->true;
+        private final UnaryOperator<Integer> reducer = i -> i-1;
+        private final Predicate<Integer> predicate = i->true;
     }
 
     @Getter @RequiredArgsConstructor
     private static class Divider implements ConditionalUnaryOperator<Integer> {
-        private final IntUnaryOperator reducer;
-        private final IntPredicate predicate;
+        private final UnaryOperator<Integer> reducer;
+        private final Predicate<Integer> predicate;
 
         Divider(int divideByN) {
             this(integer -> integer / divideByN,

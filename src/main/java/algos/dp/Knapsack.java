@@ -49,12 +49,13 @@ public class Knapsack {
     log.info(ArrayUtils.toString(wt));
     log.info(ArrayUtils.toString(val));
     Deque<Integer> take = new ArrayDeque<>();
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i <= n; i++) {
       for (int w = 1; w <= W; w++) {
         K[i][w] = K[i - 1][w];
         if (wt[i - 1] <= w)
           K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i][w]);
       }
+    }
     for (int i = n, w = W; i > 0 && w > 0; i--) {
       if (K[i][w] != K[i - 1][w]) {// if previos row at the same column is
                                    // different then it is in

@@ -170,6 +170,12 @@ class Maze<P extends Position> extends BackTrack<P> {
 	public Iterable<P> iterator(P pos) {
 		return new MazeIterator<P>(pos);
 	}
+ 
+    public void incrementState(P position) {
+    }
+
+    public void decrementState(P position) {
+    }
 
 	@Data
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
