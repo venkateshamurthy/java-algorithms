@@ -129,7 +129,7 @@ public class Sorter {
 
 		protected int[] mergeSort(int[] a, int i, int j) {
 			if (i < j) {
-				int mid = i + (j - i) / 2;
+				int mid = i + (j - i) / 2;  // (i+j)/2
 				mergeSort(a, i, mid);
 				mergeSort(a, mid + 1, j);
 				merge(a, i, mid, mid + 1 , j);

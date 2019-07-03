@@ -52,8 +52,8 @@ public class TestFindMaxSubSequence {
 	@Test
 	public void test() {
 		FindMaximumSubArray problem = new FindMaximumSubArray();
-		Assert.assertEquals(expectedMaxSum,
-				problem.findMaximumSubArray(ArrayUtils.toPrimitive(list.toArray(new Integer[0])), 0, list.size() - 1));
+		//Assert.assertEquals(expectedMaxSum,
+		//		problem.findMaximumSubArray(ArrayUtils.toPrimitive(list.toArray(new Integer[0])), 0, list.size() - 1));
 		Assert.assertEquals(expectedMaxSum, problem.findMaxSumSequence(numbers));
 	}
 }

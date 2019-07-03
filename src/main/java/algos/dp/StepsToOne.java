@@ -4,12 +4,18 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.PriorityQueue;
-import java.util.function.IntPredicate;
-import java.util.function.IntUnaryOperator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -51,14 +57,32 @@ import java.util.stream.Stream;
  *
  * @author murthyv
  */
+@Slf4j
 public class StepsToOne {
     int[] steps = null;
     PriorityQueue<Integer> pq = new PriorityQueue<>();
 
+    interface ConditionalOperator<T> extends Function<T, Optional<T>> {
+        UnaryOperator<T> getReducer();
+
+        default Predicate<T> getPredicate() {
+            return i -> true;
+        }
+
+        default Optional<T> apply(T t) {
+            return getPredicate().test(t) ?
+                    Optional.of(getReducer().apply(t))
+                    :
+                    Optional.empty();
+        }
+    }
+
     private static interface ConditionalUnaryOperator<T> extends UnaryOperator<T>, Predicate<T> {
         UnaryOperator<T> getReducer();
 
-        Predicate<T> getPredicate();
+        default Predicate<T> getPredicate() {
+            return i -> true;
+        }
 
         default T apply(final T t) {
             return getReducer().apply(t);
@@ -69,13 +93,14 @@ public class StepsToOne {
         }
     }
 
-    @Getter @NoArgsConstructor
+    @Getter
+    @NoArgsConstructor
     private static class Decrementer implements ConditionalUnaryOperator<Integer> {
-        private final UnaryOperator<Integer> reducer = i -> i-1;
-        private final Predicate<Integer> predicate = i->true;
+        private final UnaryOperator<Integer> reducer = i -> i - 1;
     }
 
-    @Getter @RequiredArgsConstructor
+    @Getter
+    @RequiredArgsConstructor
     private static class Divider implements ConditionalUnaryOperator<Integer> {
         private final UnaryOperator<Integer> reducer;
         private final Predicate<Integer> predicate;
@@ -98,29 +123,24 @@ public class StepsToOne {
                     .addAll(Divider.of(5, 3, 2))
                     .build();
 
+
     //top-down recursvie split
     int getMinStepsMemoizedWithFunctions(int n) {
-        //Basically create an array and fill it with -1
-        if (steps == null) {
-            steps = new int[n + 1];
-            Arrays.fill(steps, -1);
-            steps[0] = steps[1] = 0; //except the first as 0.
-        }
+        final AtomicInteger num = new AtomicInteger(2);
+        final ConcurrentMap<Integer, Integer> stepsMap = new ConcurrentHashMap<>();
 
-        pq.clear();
-        for (int i = 2; n > 1 && i <= n; i++, pq.clear()) {
-            final int num = i;
-            reducers.stream()
-                    .filter(r -> r.test(num))
-                    .map(r -> r.apply(num))
-                    .map(k -> steps[k])
-                    //.min(Integer::compareTo) // ==> isnt this o(n) instead should we use heap
-                    //.orElse(Integer.MAX_VALUE);// ==> just a default
-                    .forEach(pq::add);//==> this is at worst o(log(n)) but on average less than logarithmic
-            steps[i] = 1 + pq.poll(); //==> o(1)
-        }
-        return steps[n];
+        stepsMap.put(0, 0);
+        stepsMap.put(1, 0);
 
+        while (n > 1 && num.getAndIncrement() < n) {
+            reducers.parallelStream()
+                    .filter(r -> r.test(num.intValue()))
+                    .map(r -> r.apply(num.intValue()))
+                    .map(i -> stepsMap.getOrDefault(i, Integer.MAX_VALUE))
+                    .min(Integer::compareTo)
+                    .ifPresent(result -> stepsMap.putIfAbsent(num.intValue(), 1 + result));
+        }
+        return stepsMap.get(n);
     }
 
     //top-down recursvie split - however this will get to stackoverflow beyond few thousands
@@ -165,18 +185,20 @@ public class StepsToOne {
     }
 
     public static void main(String[] args) {
-        int number = 15;
-        System.out.println(
-                "getMinStepsMemoizedWithFunctions->" + new StepsToOne().getMinStepsMemoizedWithFunctions(number)
+        int number = 99997;
+        log.info("Starting...");
+        log.info(
+                "getMinStepsMemoizedWithFunctions->{}", new StepsToOne().getMinStepsMemoizedWithFunctions(number)
         );
         try {
-            System.out.println(
-                    "getMinStepsMemoize->" + new StepsToOne().getMinStepsMemoize(number)
+            log.info(
+                    "getMinStepsMemoize->{}", new StepsToOne().getMinStepsMemoize(number)
             );
         } catch (StackOverflowError e) {
+            log.error("getMinStepsMemoize - stack over flow");
         }
-        System.out.println(
-                "getMinSteps->" + new StepsToOne().getMinSteps(number)
+        log.info(
+                "getMinSteps->{}", new StepsToOne().getMinSteps(number)
         );
     }
 }

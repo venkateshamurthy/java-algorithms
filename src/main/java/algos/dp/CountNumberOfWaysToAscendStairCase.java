@@ -1,6 +1,7 @@
 package algos.dp;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 
@@ -38,7 +39,9 @@ public class CountNumberOfWaysToAscendStairCase {
     if (n == 0) {
       return 1;
     } else if (memo[n] == -1) {
-      memo[n] = countWays(n - 1) + countWays(n - 2) + countWays(n - 3);
+      memo[n] = Stream.of(countWays(n - 1), countWays(n - 2), countWays(n - 3))
+              .mapToInt(Integer::intValue)
+              .sum();
     }
     return memo[n];
   }

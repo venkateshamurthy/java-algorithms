@@ -1,151 +1,121 @@
 package algos.backtracking;
 
-import static algos.backtracking.WordMatrix2.State;
 
-/** A word matrix in which a word needs to be searched in all 8 directions.*/
-public class WordMatrix2 implements Backtracker<State> {
-  /** A backtrack state machine.*/
-  private final State state;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-  /** Ctor.*/
-  WordMatrix2(char[][] matrix, String word){
-    this.state = new State(matrix,word);
-  }
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
-  /**{@inheritDoc}.*/
-  public void print() {
-    state.print();
-  }
+@Slf4j
+public class WordMatrix2 implements BackTracker<WordMatrix2.WordState> {
+    private final int[][] solution;
+    private final AtomicInteger path = new AtomicInteger();
+    private final char[][] matrix;
+    private final String word;
 
-  /**{@inheritDoc}.*/
-  @Override
-  public boolean search() {
-    return state.search(this);
-  }
-
-  public static void main(String[] args) {
-    char[][] matrix = { 
-        { 't', 'z', 'x', 'c', 'd' }, 
-        { 'a', 'h', 'n', 'z', 'x' }, 
-        { 'h', 'w', 'o', 'i', 'o' },
-        { 'o', 'r', 'n', 'r', 'n' }, 
-        { 'a', 'b', 'r', 'i', 'n' } };
-    
-    WordMatrix2 w = new WordMatrix2(matrix, "horizon");
-    
-    if (w.search()) {
-      w.print();
-    } else {
-      System.out.println("NO PATH FOUND");
-    }
-  }
-
-  /** A state class for holding Word Matrix search of a word ib tne classic backtrack style.*/
-  protected static class State implements BacktrackState<State> {
-    char[][] matrix;
-    String word;
-    int[][] solution;
-    int path = 1;
-    int row, col, index;
-
-    State(char[][] matrix, String word) {
-      this.matrix = matrix;
-      this.word = word;
-      solution = new int[matrix.length][matrix[0].length];
+    // initialize the solution matrix in constructor.
+    private WordMatrix2(final char[][] matrix, final String word) {
+        solution = new int[matrix.length][matrix[0].length];
+        this.matrix = matrix;
+        this.word = word;
     }
 
-    private boolean validCell() {
-      return validCell(row, col);
-    }
-    private boolean untouchedCell() { return solution[row][col] == 0;}
-    private boolean validCell(int row, int col) {
-      return row >= 0 && row < matrix.length && col >= 0 && col <= matrix[0].length;
-    }
-
-    @Override
-    public boolean isValid() {
-      boolean unsolvedCell = validCell() && untouchedCell();
-      boolean matched = validCell() && index < word.length() && word.charAt(index) == matrix[row][col];
-      return unsolvedCell && matched;
-    }
-
-    @Override
-    public void markAsPossible() {
-      if (validCell())
-        solution[row][col] += path++;
-    }
-
-    @Override
-    public void backTrack() {
-      if (validCell())
-        solution[row][col] += --path;
-    }
-
-    @Override
-    public boolean isGoal() {
-      return index == word.length() - 1;
-    }
-
-    @Override
-    public State createMemento() {
-      State copy = new State(matrix, word).mutate(row, col, index);
-      copy.path = path;
-      for (int i = 0; i < solution.length; i++) {
-        System.arraycopy(solution[i], 0, copy.solution[i], 0, solution[i].length);
-      }
-      return copy;
-    }
-
-    @Override
-    public State restoreMemento(State copy) {
-      mutate(copy.row, copy.col, copy.index);
-      path = copy.path;
-      for (int i = 0; i < solution.length; i++) {
-        System.arraycopy(copy.solution[i], 0, solution[i], 0, solution[i].length);
-      }
-      return this;
-    }
-
-    protected State mutate(int row, int col, int index) {
-      this.row = row;
-      this.col = col;
-      this.index = index;
-      return this;
-    }
-
-    @Override
-    public void print() {
-      for (int i = 0; i < solution.length; i++) {
-        for (int j = 0; j < solution[0].length; j++) {
-          System.out.print(" " + solution[i][j] + matrix[i][j]);
+    private void print() {
+        final StringBuilder sb = new StringBuilder("Data Matrix\n");
+        for (int i = 0; i < solution.length; i++) {
+            for (int j = 0; j < solution.length; j++) {
+                sb.append(" ").append(solution[i][j]).append(matrix[i][j]);
+            }
+            sb.append("\n");
         }
-        System.out.println();
-      }
+        log.info("{}", sb);
     }
 
-    @Override
-    public boolean tryReachNextGoal(Backtracker<State> backTracker) {
-      State current = createMemento();
-      return backTracker.search(restoreMemento(current).mutate(row + 1, col,     index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row - 1, col,     index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row,     col + 1, index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row,     col - 1, index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row - 1, col + 1, index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row - 1, col - 1, index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row + 1, col - 1, index + 1))
-          || backTracker.search(restoreMemento(current).mutate(row + 1, col + 1, index + 1));
-    }
-
-    @Override
-    public boolean search(Backtracker<State> backTracker) {
-      for (int i = 0; i < matrix.length; i++) {
-        for (int j = 0; j < matrix[0].length; j++) {
-          if (backTracker.search(mutate(i, j, 0))) {
-            return true;
-          }
+    public boolean search() {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (search(new WordState(i, j, 0))) {
+                    return true;
+                }
+            }
         }
-      }
-      return false;
+        return false;
     }
-  }
+
+    @Override
+    public void markSolution(final WordState state) {
+        solution[state.row][state.col] += path.incrementAndGet();
+    }
+
+    @Override
+    public void unmarkSolution(final WordState state) {
+        solution[state.row][state.col] += path.decrementAndGet();
+    }
+
+    @Override
+    public boolean isStateGoal(final WordState state) {
+        return state.index == word.length() - 1;
+    }
+
+    @Override
+    public boolean isStateValid(final WordState state) {
+        boolean validCell = state.row >= 0 && state.row < matrix.length && state.col >= 0 && state.col < matrix[0].length;
+        boolean unsolvedCell = validCell && solution[state.row][state.col] == 0;
+        boolean matched = validCell && state.index < word.length() && word.charAt(state.index) == matrix[state.row][state.col];
+        return unsolvedCell && matched;
+    }
+
+    /**
+     * <pre>
+     * |-----|-----|-----|
+     * |-1,-1|-1,0 |-1,1 |
+     * |-----|-----|-----|
+     * |0,-1 | 0,0 |0,1  |
+     * |-----|-----|-----|
+     * |1,-1 | 1,0 |1,1  |
+     * |-----|-----|-----|
+     * </pre>
+     * @return Stream of next possible states
+     */
+    @Override
+    public Stream<WordState> nextPossibleStates(final  WordState state) {
+        int row = state.row;
+        int col = state.col;
+        int index = state.index;
+
+        return Stream.of(
+                new WordState(row + 0, col - 1, index + 1),
+                new WordState(row - 1, col - 1, index + 1),
+                new WordState(row - 1, col + 0, index + 1),
+                new WordState(row - 1, col + 1, index + 1),
+                new WordState(row + 0, col + 1, index + 1),
+                new WordState(row + 1, col + 1, index + 1),
+                new WordState(row + 1, col + 0, index + 1),
+                new WordState(row + 1, col - 1, index + 1));
+    }
+
+    @RequiredArgsConstructor
+    static class WordState {
+        private final int row;
+        private final int col;
+        private final int index;
+    }
+
+    public static void main(String[] args) {
+        char[][] matrix = {
+                {'t', 'z', 'x', 'c', 'd'},
+                {'a', 'h', 'n', 'z', 'x'},
+                {'h', 'w', 'o', 'i', 'o'},
+                {'o', 'r', 'n', 'r', 'n'},
+                {'a', 'b', 'r', 'i', 'n'}};
+        WordMatrix2 w = new WordMatrix2(matrix, "horizon");
+        if (w.search()) {
+            log.info("YES PATH FOUND");
+        } else {
+            log.info("NO PATH FOUND");
+        }
+        w.print();
+    }
+
 }

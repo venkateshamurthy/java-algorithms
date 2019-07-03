@@ -10,6 +10,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Comparator;
+import java.util.stream.Stream;
 //Using lombok annotation for log4j handle
 
 /**
@@ -69,7 +72,7 @@ public class FindMaximumSubArray {
 		} else {
 			int low = l, high = h, mid = (l +(h-l) / 2);
 			MaxSum  lMaxSum =  findMaximumSubArray(list, low,      mid), 
-					    rMaxSum =  findMaximumSubArray(list, mid + 1,  high),
+					rMaxSum =  findMaximumSubArray(list, mid + 1,  high),
 			        cMaxSum =  findMaximumSubArray(list, low, mid, high);
 			return MaxSum.findMax(lMaxSum, rMaxSum, cMaxSum);
 		}
@@ -108,16 +111,14 @@ public class FindMaximumSubArray {
 @Data(staticConstructor = "of")
 @Accessors(fluent = true)
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal =true)
-class MaxSum {
+class MaxSum  {
 	int low, high;
 	int sum;
+	static MaxSum INVALID=of(MIN_VALUE, MIN_VALUE, MIN_VALUE);
 
 	static MaxSum findMax(MaxSum left, MaxSum right, MaxSum cross) {
-		if (left.sum > right.sum && left.sum > cross.sum)
-			return left;
-		else if (right.sum > left.sum && right.sum > cross.sum)
-			return right;
-		else
-			return cross;
+		return Stream.of(left, right, cross)
+				.min((a,b)->Integer.compare(a.sum,b.sum))
+				.orElse(INVALID);
 	}
 }

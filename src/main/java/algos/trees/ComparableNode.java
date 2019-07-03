@@ -6,8 +6,8 @@ import lombok.NonNull;
 
 public interface ComparableNode<T extends Comparable<T>>{
   @NonNull Comparator<T> comparator();
-  T value();
-  void setValue(T value);
+  T        value();
+  void     setValue(T value);
   default  int compare(ComparableNode<T>e){return comparator().compare(value(), e.value());}
   default  int compareInverse(ComparableNode<T>e){return comparator().compare( e.value(), value());}
   default  boolean eq(ComparableNode<T>e) {return value().equals(e.value());}

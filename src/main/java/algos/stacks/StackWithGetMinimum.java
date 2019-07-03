@@ -34,11 +34,15 @@ public class StackWithGetMinimum <E extends Comparable<E>>{
 	}
 	
 	public static void main(String[] args){
-		Integer[] a={8,7,6,5,4,3,2,1};
+		Integer[] a={8,7,2,5,4,1,2,19,13,17,16};
 		StackWithGetMinimum<Integer> stack = new StackWithGetMinimum<Integer>();
-		for (Integer i:a)
+		for (Integer i:a) {
 			stack.push(i);
-		while(!stack.isEmpty())
+			log.debug("{}",stack.peekMin());
+		}
+		while(!stack.isEmpty()){
 			stack.pop();
+			log.debug("{}",stack.peekMin());
+		}
 	}
 }

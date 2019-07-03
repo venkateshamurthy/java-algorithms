@@ -30,9 +30,10 @@ public class HeightVisitor<T extends Comparable<T>> implements
     public Integer visit(BSTNode<T> e) {
 
         log.debug(e.value() + " s=" + runningHeight.get());
-        return runningHeight.addAndGet(1 + FastMath.max(
-                e.hasLeft() ? visit(e.left()) : 0,
-                e.hasRight() ? visit(e.right()) : 0));
+        return runningHeight.addAndGet(1 +
+                FastMath.max(
+                     e.hasLeft() ? visit(e.left()) : 0,
+                     e.hasRight() ? visit(e.right()) : 0));
     }
 
     @Override
