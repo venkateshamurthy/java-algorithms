@@ -1,21 +1,17 @@
 package algos.dp;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.PriorityQueue;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.function.IntConsumer;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -58,93 +54,134 @@ import java.util.stream.Stream;
  * @author murthyv
  */
 @Slf4j
+@RequiredArgsConstructor
 public class StepsToOne {
-    int[] steps = null;
-    PriorityQueue<Integer> pq = new PriorityQueue<>();
+    private final StepsToOneStrategy stepsToOne;
 
-    interface ConditionalOperator<T> extends Function<T, Optional<T>> {
-        UnaryOperator<T> getReducer();
-
-        default Predicate<T> getPredicate() {
-            return i -> true;
-        }
-
-        default Optional<T> apply(T t) {
-            return getPredicate().test(t) ?
-                    Optional.of(getReducer().apply(t))
-                    :
-                    Optional.empty();
-        }
+    public StepsToOne() {
+        this(new BottomUpUsingUnaryOperator());
     }
 
-    private static interface ConditionalUnaryOperator<T> extends UnaryOperator<T>, Predicate<T> {
-        UnaryOperator<T> getReducer();
 
-        default Predicate<T> getPredicate() {
-            return i -> true;
-        }
-
-        default T apply(final T t) {
-            return getReducer().apply(t);
-        }
-
-        default boolean test(final T t) {
-            return getPredicate().test(t);
-        }
+    void display(int number) {
+        System.out.format("%s->%s\n", stepsToOne.getClass().getSimpleName(),
+                           stepsToOne.getMinStepsToOne(number)
+        );
     }
 
-    @Getter
-    @NoArgsConstructor
+    public static void main(String[] args) {
+        int number=1000_000;
+        val bottomUpUsingUnaryOperator = new StepsToOne(new BottomUpUsingUnaryOperator());
+        log.info("Starting...");
+        new StepsToOne(new BottomUpIterative()).display(number);
+        try {
+            new StepsToOne(new TopDownRecursive()).display(number);
+        } catch (StackOverflowError e) {
+            log.error("TopDownRecursive - stack over flow");
+        }
+        bottomUpUsingUnaryOperator.display(number);
+    }
+}
+
+interface StepsToOneStrategy {
+    int getMinStepsToOne(final int n);
+}
+
+class BottomUpUsingUnaryOperator implements StepsToOneStrategy {
+    private interface ConditionalUnaryOperator<T> extends UnaryOperator<T>, Predicate<T> {}
+
     private static class Decrementer implements ConditionalUnaryOperator<Integer> {
-        private final UnaryOperator<Integer> reducer = i -> i - 1;
+        public Integer apply(Integer i) {return i - 1;}
+        public boolean test(Integer i)  {return true;}
+        private final String name = "MinusBy1";
     }
 
-    @Getter
-    @RequiredArgsConstructor
     private static class Divider implements ConditionalUnaryOperator<Integer> {
-        private final UnaryOperator<Integer> reducer;
-        private final Predicate<Integer> predicate;
+        private final String name;
+        private final int divideByN;
 
-        Divider(int divideByN) {
-            this(integer -> integer / divideByN,
-                    integer -> integer % divideByN == 0);
+        Divider(String name, int divideByN) {
+            this.name="DividerBy"+divideByN;
+            this.divideByN=divideByN;
         }
+
+        public Integer apply(Integer i) {return i / divideByN;}
+        public boolean test(Integer i)  {return i % divideByN == 0;}
 
         static List<ConditionalUnaryOperator<Integer>> of(Integer... divisors) {
-            return Stream.of(divisors)
-                    .map(Divider::new)
-                    .collect(Collectors.toList());
+            return Stream.of(divisors).map(divideByN -> new Divider("DivideBy", divideByN)).collect(Collectors.toList());
         }
     }
 
     private final List<ConditionalUnaryOperator<Integer>> reducers =
-            ImmutableList.<ConditionalUnaryOperator<Integer>>builder()
-                    .add(new Decrementer())
-                    .addAll(Divider.of(5, 3, 2))
-                    .build();
-
+            ImmutableList.<ConditionalUnaryOperator<Integer>>builder().add(new Decrementer())
+                    .addAll(Divider.of(3, 2)).build();
 
     //top-down recursvie split
-    int getMinStepsMemoizedWithFunctions(int n) {
-        final AtomicInteger num = new AtomicInteger(2);
-        final ConcurrentMap<Integer, Integer> stepsMap = new ConcurrentHashMap<>();
+    public int getMinStepsToOne(final int n) {
+        final ConcurrentMap<Integer, Integer> stepsMap = new ConcurrentHashMap<>(1000);
 
         stepsMap.put(0, 0);
         stepsMap.put(1, 0);
+        stepsMap.put(2, 1);
+        stepsMap.put(3, 1);
 
-        while (n > 1 && num.getAndIncrement() < n) {
-            reducers.parallelStream()
-                    .filter(r -> r.test(num.intValue()))
-                    .map(r -> r.apply(num.intValue()))
-                    .map(i -> stepsMap.getOrDefault(i, Integer.MAX_VALUE))
-                    .min(Integer::compareTo)
-                    .ifPresent(result -> stepsMap.putIfAbsent(num.intValue(), 1 + result));
-        }
+        IntConsumer reducing = number -> reducers.stream()
+                .filter(reducer -> reducer.test(number))
+                .map(reducer -> reducer.apply(number))
+                .map(stepsMap::get).filter(Objects::nonNull)
+                .min(Integer::compare)
+                .ifPresent(result -> stepsMap.putIfAbsent(number, 1 + result));
+
+        IntStream.rangeClosed(1, n)
+                //.parallel() --> this is not working
+                .forEach(reducing);
+
         return stepsMap.get(n);
     }
+}
+
+class BottomUpIterative implements StepsToOneStrategy {
+    //Bottom up - iterative
+    public int getMinStepsToOne(int n) {
+        int steps[] = new int[n + 1], i = 0;
+        IntUnaryOperator[] operation = new IntUnaryOperator[n+1];
+        for (i = 2; n > 1 && i <= n; i++) {
+            // 1 + Min( F (n-1), F(n/2) iff n%2==0, F(n/3) iff n%3==0)
+            int iMinus1 = steps[i - 1];
+            int iBy2 = i % 2 == 0 ? steps[i / 2] : Integer.MAX_VALUE;
+            int iBy3 = i % 3 == 0 ? steps[i / 3] : Integer.MAX_VALUE;
+
+            int minResult = IntStream.of(iMinus1, iBy2, iBy3).min().orElseThrow(IllegalStateException::new);
+
+            steps[i] = 1 + minResult;
+
+            if(minResult==iMinus1) {
+                operation[i] = j->j-1;
+            }
+
+            if(minResult==iBy2) {
+                operation[i] = j->j/2;
+            }
+
+            if(minResult==iBy3) {
+                operation[i] = j->j/3;
+            }
+        }
+
+        for (int k=n;k>1;) {
+            //System.out.format("steps[%s]:%s\n",k,steps[k]);
+            k = operation[k].applyAsInt(k);
+        }
+        return steps[n];
+    }
+}
+
+class TopDownRecursive implements StepsToOneStrategy {
 
     //top-down recursvie split - however this will get to stackoverflow beyond few thousands
-    int getMinStepsMemoize(int i) {
+    int[] steps = null;
+    public int getMinStepsToOne(int i) {
         //Basically create an array and fill it with -1
         if (steps == null) {
             steps = new int[i];
@@ -159,46 +196,12 @@ public class StepsToOne {
             return steps[i - 1]; // ith step is done!
 
         // 1 + Min( F (n-1), F(n/2) iff n%2==0, F(n/3) iff n%3==0)
-        int minSteps = getMinStepsMemoize(i - 1);
+        int minSteps = getMinStepsToOne(i - 1);
 
         return steps[i - 1] = 1 + IntStream.of(
                 minSteps,
-                i % 5 == 0 ? getMinStepsMemoize(i / 5) : minSteps,
-                i % 2 == 0 ? getMinStepsMemoize(i / 2) : minSteps,
-                i % 3 == 0 ? getMinStepsMemoize(i / 3) : minSteps)
-                .min().orElse(Integer.MAX_VALUE);
-    }
-
-    //Bottom up - iterative
-    int getMinSteps(int n) {
-        int steps[] = new int[n + 1], i = 0;
-        for (i = 2; n > 1 && i <= n; i++) {
-            // 1 + Min( F (n-1), F(n/2) iff n%2==0, F(n/3) iff n%3==0)
-            steps[i] = 1 + IntStream.of(
-                    steps[i - 1],
-                    i % 5 == 0 ? steps[i / 5] : steps[i - 1],
-                    i % 2 == 0 ? steps[i / 2] : steps[i - 1],
-                    i % 3 == 0 ? steps[i / 3] : steps[i - 1])
-                    .min().orElse(Integer.MAX_VALUE);
-        }
-        return steps[n];
-    }
-
-    public static void main(String[] args) {
-        int number = 99997;
-        log.info("Starting...");
-        log.info(
-                "getMinStepsMemoizedWithFunctions->{}", new StepsToOne().getMinStepsMemoizedWithFunctions(number)
-        );
-        try {
-            log.info(
-                    "getMinStepsMemoize->{}", new StepsToOne().getMinStepsMemoize(number)
-            );
-        } catch (StackOverflowError e) {
-            log.error("getMinStepsMemoize - stack over flow");
-        }
-        log.info(
-                "getMinSteps->{}", new StepsToOne().getMinSteps(number)
-        );
+                i % 2 == 0 ? getMinStepsToOne(i / 2) : minSteps,
+                i % 3 == 0 ? getMinStepsToOne(i / 3) : minSteps)
+                .min().orElseThrow(IllegalStateException::new);
     }
 }

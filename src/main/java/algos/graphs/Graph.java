@@ -38,8 +38,10 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
 
   /** A collection of vertices considered in inserted order. */
   Map<VertexInterface<T>, VertexInterface<T>> verticies = new LinkedHashMap<>();
+
   /** A collection of edges considered in inserted order. */
   Map<EdgeInterface<T>, EdgeInterface<T>> edges = new LinkedHashMap<>();
+
   /** The type of graph {@link TYPE#DIRECTED} or {@link TYPE#UNDIRECTED}. */
   TYPE type;
 
@@ -56,9 +58,6 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
 
   /**
    * Adjacent Vertex List
-   * 
-   * @param u
-   * @return
    */
   @Override
   public List<VertexInterface<T>> adjV(VertexInterface<T> u) {
@@ -67,9 +66,6 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
 
   /**
    * Adjacent Edges
-   * 
-   * @param u
-   * @return
    */
   @Override
   public List<EdgeInterface<T>> adjE(VertexInterface<T> u) {

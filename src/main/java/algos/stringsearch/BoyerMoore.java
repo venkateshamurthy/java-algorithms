@@ -3,18 +3,12 @@
  */
 package algos.stringsearch;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;//Using lombok annotation for log4j handle
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.logging.log4j.LogManager;
@@ -22,17 +16,18 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.springframework.util.Assert;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * @author vmurthy
  * 
  */
 // Log4j Handle creator (from lombok)
-@Log4j2
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Builder
 public class BoyerMoore implements StringSearcher {
 	static final Logger log = LogManager
 			.getLogger(StringFormatterMessageFactory.INSTANCE);
@@ -96,18 +91,10 @@ public class BoyerMoore implements StringSearcher {
 		String pattern =                "experience";//lastOccurance= {e=9,x=1,p=2,r=4,i=5,n=7,c=8}
 		log.debug(text);
 		log.debug(pattern+" lastOccurance= {e=9,x=1,p=2,r=4,i=5,n=7,c=8}");
-		BoyerMoore bm = BoyerMoore.Builder.builder().pattern(pattern).build();
+		BoyerMoore bm = new BoyerMoore(pattern, StringUtils.reverse(pattern)
+				.toCharArray());
 		int index = bm.search(text, 0);
 		Assert.isTrue(index!=-1);
 	}
 
-	@Data(staticConstructor = "builder")
-	public static class Builder extends BoyerMooreBuilder {
-		public BoyerMoore build() {
-			Assert.hasText(super.pattern);
-			super.reversePattern(StringUtils.reverse(super.pattern)
-					.toCharArray());
-			return super.build().computeLastOccurance();
-		}
-	}
 }
