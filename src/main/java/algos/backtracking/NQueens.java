@@ -2,7 +2,9 @@ package algos.backtracking;
 
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,21 +14,26 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-@RequiredArgsConstructor
 public class NQueens implements BackTracker<NQueens.Position> {
 
     private final int queens;
-
-    private final int[][] chessBoard = new int[queens][queens];
-
-    private final Range<Integer> validRange = Range.closedOpen(0, queens);
-    private final boolean[] rows = new boolean[queens];
-    private final boolean[] cols = new boolean[queens];
+    @Getter private final int[][] chessBoard;
+    private final Range<Integer> validRange;
+    private final boolean[] rows;
+    private final boolean[] cols;
     // Sum and Diff diagonals
     private final Map<Integer, Boolean> sumDiagonal = new HashMap<>();
     private final Map<Integer, Boolean> diffDiagonal = new HashMap<>();
 
-    private void print() {
+    NQueens(int queenCount){
+        queens= queenCount;
+        chessBoard = new int[queens][queens];
+        validRange = Range.closed(0, queens);
+        rows = new boolean[queens];
+        cols = new boolean[queens];
+    }
+
+    void print() {
         final StringBuilder sb = new StringBuilder("Data Matrix\n");
 
         for (int i = 0; i < chessBoard.length; i++) {

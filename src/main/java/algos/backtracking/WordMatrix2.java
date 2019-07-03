@@ -1,6 +1,7 @@
 package algos.backtracking;
 
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,19 +10,19 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class WordMatrix2 implements BackTracker<WordMatrix2.WordState> {
-    private final int[][] solution;
+    @Getter private final int[][] solution;
     private final AtomicInteger path = new AtomicInteger();
     private final char[][] matrix;
     private final String word;
 
     // initialize the solution matrix in constructor.
-    private WordMatrix2(final char[][] matrix, final String word) {
+    public WordMatrix2(final char[][] matrix, final String word) {
         solution = new int[matrix.length][matrix[0].length];
         this.matrix = matrix;
         this.word = word;
     }
 
-    private void print() {
+    public void print() {
         final StringBuilder sb = new StringBuilder("Data Matrix\n");
         for (int i = 0; i < solution.length; i++) {
             for (int j = 0; j < solution.length; j++) {
