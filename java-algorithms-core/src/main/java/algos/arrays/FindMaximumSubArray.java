@@ -31,8 +31,8 @@ import java.util.stream.Stream;
 public class FindMaximumSubArray {
 	public static void main(String[] args){
 		 int[] inputArray=new int[]{1, -2, 3, 10, -4, 7, 2, -5};
-		 System.out.println(findMaxSumSequence(inputArray));
-		 System.out.println(findMaximumSubArray(inputArray,0,inputArray.length-1));
+		 log.info("{}",findMaxSumSequence(inputArray));
+		 log.info("{}",findMaximumSubArray(inputArray,0,inputArray.length-1));
 	}
 	
 	/** A Linear time algorithm. */

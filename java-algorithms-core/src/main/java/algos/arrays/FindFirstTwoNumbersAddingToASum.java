@@ -12,15 +12,13 @@ import java.util.Optional;
 public class FindFirstTwoNumbersAddingToASum {
     private final int[] input;
 
-    public Optional<Pair<Integer, Integer>> findPair(final int sum) {
+    public Optional<Pair<Integer,Integer>> findPair(final int sum) {
         final Map<Integer, Integer> map = new HashMap<>();
+
         for (int i = 0; i < input.length; i++) {
-            if (map.get(sum - input[i]) != null) {
+            if (map.containsKey(sum - input[i])) {
                 return Optional.of(ImmutablePair.of(i, map.get(sum - input[i])));
             } else {
-                if (input[i] == sum) {
-                    return Optional.of(ImmutablePair.of(i, null));
-                }
                 map.put(input[i], i);
             }
         }
