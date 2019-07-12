@@ -1,0 +1,12 @@
+dontinline,*.*_all_jmhStub
+dontinline,*.*_avgt_jmhStub
+dontinline,*.*_sample_jmhStub
+dontinline,*.*_ss_jmhStub
+dontinline,*.*_thrpt_jmhStub
+inline,algos/dp/StepsToOneTest.performanceTest
+inline,algos/graphs/ShortestTest.performanceTest
+inline,com/snippet/MyBenchmark$BenchmarkState.setUp
+inline,com/snippet/MyBenchmark.atomicLong
+inline,com/snippet/MyBenchmark.longAdder
+inline,com/snippet/MyBenchmark.longStreamSum
+inline,com/snippet/MyBenchmark.volatileLong
