@@ -14,11 +14,11 @@ public class FindFirstTwoNumbersAddingToASum {
 
     public Optional<Pair<Integer, Integer>> findPair(final int sum) {
         final Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < input.length; i++){
-            if (map.get(sum-input[i]) != null) {
-                return Optional.of(ImmutablePair.of(i, map.get(sum-input[i])));
+        for (int i = 0; i < input.length; i++) {
+            if (map.get(sum - input[i]) != null) {
+                return Optional.of(ImmutablePair.of(i, map.get(sum - input[i])));
             } else {
-                if (input[i]==sum) {
+                if (input[i] == sum) {
                     return Optional.of(ImmutablePair.of(i, null));
                 }
                 map.put(input[i], i);
