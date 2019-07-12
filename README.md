@@ -8,8 +8,8 @@ An additional maven module __```java-algorithms-it```__ is an OpenJDK based JMH 
 
 ### Default maven goal ###
 
-__```mvn clean install```___ just compiles and runs unit tests.
+__```mvn clean install```__ just compiles and runs unit tests.
 
 ### How to run benchmark ###
 
-__```mvn clean integration-tes```__ to run benchmark tests typically running to several minutes
+__```mvn clean integration-test```__ to run benchmark tests typically running to several minutes
