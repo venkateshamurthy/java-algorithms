@@ -39,7 +39,7 @@ public class TestFindMaxSubSequence {
 	public static Collection<Object[]> init() {
 		return Arrays.asList(new Object[][] { { // First row
 				new int[] { 13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5,
-						-22, 15, -4, 7 }, MaxSum.of(7, 10, 43) } });
+						-22, 15, -4, 7 }, MaxSum.builder().low(7).high(10).sum(43).build() } });
 	}
 
 	@Before
@@ -52,8 +52,8 @@ public class TestFindMaxSubSequence {
 	@Test
 	public void test() {
 		FindMaximumSubArray problem = new FindMaximumSubArray();
-		//Assert.assertEquals(expectedMaxSum,
-		//		problem.findMaximumSubArray(ArrayUtils.toPrimitive(list.toArray(new Integer[0])), 0, list.size() - 1));
-		Assert.assertEquals(expectedMaxSum, problem.findMaxSumSequence(numbers));
+		Assert.assertEquals(expectedMaxSum,
+				problem.findMaximumSubArray(ArrayUtils.toPrimitive(list.toArray(new Integer[0])), 0, list.size() - 1));
+		//Assert.assertEquals(expectedMaxSum, problem.findMaxSumSequence(numbers));
 	}
 }

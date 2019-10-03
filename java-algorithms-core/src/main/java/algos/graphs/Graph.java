@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.util.Assert;
@@ -90,9 +91,10 @@ public class Graph<T extends Comparable<T>> implements GraphInterface<T> {
   }
 
   protected VertexInterface<T> addVertex(VertexInterface<T> v) {
-    if (!verticies.containsKey(v))
+    return verticies.computeIfAbsent(v, Function.identity());
+    /*if (!verticies.containsKey(v))
       verticies.put(v, v);
-    return verticies.get(v);
+    return verticies.get(v);*/
   }
 
   @Override

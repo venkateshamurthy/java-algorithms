@@ -3,10 +3,16 @@ package algos.arrays;
 import static java.lang.Math.*;
 import lombok.Data;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class FindMinMax2 {
 	static int comparisons = 0;
 
 	public static int[] findMinMaxRecursive(int[] arr, int i, int j) {
+		IntStream.rangeClosed(i,j)
+				.filter(num -> (num & 0x1) == 0x1)
+				.boxed().collect(Collectors.toList());
 		int minMax[] = new int[2];
 		if (i == j)
 			minMax[0] = minMax[1] = arr[i];
@@ -20,10 +26,11 @@ public class FindMinMax2 {
 			}
 			comparisons += 1;
 		} else {
-			int[] left = findMinMaxRecursive(arr, i, (i + j) / 2);
-			int[] right = findMinMaxRecursive(arr, (i + j) / 2 + 1, j);
-			minMax[0] = min(left[0], right[0]);
-			minMax[1] = max(left[1], right[1]);
+			int mid = (i+j) >> 1;
+			int[] left = findMinMaxRecursive(arr, i, mid);
+			int[] right = findMinMaxRecursive(arr, mid + 1, j);
+			minMax[0] = left[0] < right[0] ? left[0] : right[0];
+			minMax[1] = left[1] > right[1] ? left[1] : right[1];
 			comparisons += 2;
 		}
 		return minMax;

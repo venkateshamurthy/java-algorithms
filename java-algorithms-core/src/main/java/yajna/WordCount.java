@@ -1,6 +1,14 @@
 package yajna;
 
-public class WordCount {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class WordCount<X, Y> {
+
+	 Map<X,Y> map = new HashMap<>();
+
+
 
 	public static void main(String[] args){
 		

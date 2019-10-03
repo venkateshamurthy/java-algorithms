@@ -13,7 +13,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class StepsToOneTest {
     private final StepsToOneStrategy stepsToOne;
-
     @Parameterized.Parameters()
     public static Collection input (){
         return Arrays.asList(new Object[][]{

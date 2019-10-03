@@ -41,10 +41,6 @@ public class MaxSumPathVisitor<T extends Number & Comparable<T>> implements BSTV
 		if (e.isBachelor()) {
 			if (sum > maxSum) {
 				maxSum = sum;
-				BSTNode<T> t = e;
-				while (t.hasParent()) {
-					t=t.parent();
-				}
 			}
 		} else {
 			if (e.hasLeft())

@@ -44,15 +44,15 @@ public class KColorable implements BackTracker<KColorable.State> {
     private final List<Integer> vertices = IntStream.range(0,10).boxed().collect(Collectors.toList());
     private final Map<Integer, List<Integer>> graph = ImmutableMap.<Integer, List<Integer>>builder()
            //1  2  3  4  5  6  7  8  9 10
-            .put(0, ImmutableList.of(1, 3, 4, 5, 6))//1
-            .put(1, ImmutableList.of(0, 2, 6))//2
-            .put(2, ImmutableList.of(1, 3, 7))//3
-            .put(3, ImmutableList.of(0, 2, 4, 8))//4
-            .put(4, ImmutableList.of(0, 3, 8, 9))//5
-            .put(5, ImmutableList.of(0, 7, 8))//8
-            .put(6, ImmutableList.of(1, 8, 9))//7
-            .put(7, ImmutableList.of(2, 5, 9))//8
-            .put(8, ImmutableList.of(3, 4, 5, 6, 9))//9
+            .put(0, ImmutableList.of(1, 3, 4, 5, 6)) //1
+            .put(1, ImmutableList.of(0, 2, 6))       //2
+            .put(2, ImmutableList.of(1, 3, 7))       //3
+            .put(3, ImmutableList.of(0, 2, 4, 8))    //4
+            .put(4, ImmutableList.of(0, 3, 8, 9))    //5
+            .put(5, ImmutableList.of(0, 7, 8))       //6
+            .put(6, ImmutableList.of(1, 8, 9))       //7
+            .put(7, ImmutableList.of(2, 5, 9))       //8
+            .put(8, ImmutableList.of(3, 4, 5, 6, 9)) //9
             .put(9, ImmutableList.of(4, 6, 7, 8))
             .build();
 

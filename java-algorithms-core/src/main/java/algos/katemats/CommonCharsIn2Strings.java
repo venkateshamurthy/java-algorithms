@@ -1,13 +1,8 @@
 package algos.katemats;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.CharUtils;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class CommonCharsIn2Strings {
@@ -23,6 +18,6 @@ public class CommonCharsIn2Strings {
 		final Set<Character> B = second.chars().mapToObj(i->(char)i)
 				.collect(Collectors.toSet());
 
-		return Sets.intersection(A,B);
+		return Sets.intersection(A, B);
 	}
 }
