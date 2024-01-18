@@ -10,7 +10,7 @@ public interface BackTracker<S> {
     /** Check if the stated goal is achieved with this pasded State.*/
     boolean isStateGoal(final S state);
 
-    /** Check if the state is valid with this pasded State.*/
+    /** Check if the state is valid with this passed State.*/
     boolean isStateValid(final S state);
 
     /** Mark the solution as possible for this passed State.*/
@@ -19,12 +19,12 @@ public interface BackTracker<S> {
     /** Unmark the solution as possible for this passed State.*/
     void unmarkSolution(final S state);
 
-    /** Enumerate the next possbile states that can originate from this passed State.*/
+    /** Enumerate the next possible states that can originate from this passed State.*/
     Stream<S> nextPossibleStates(final S state);
 
     /** Start the search from the passed state and keep probing further as and when the current search result is good.*/
     default boolean search(final S state) {
-        if (isStateValid(state)){
+        if (isStateValid(state)) {
             markSolution(state);
             if (isStateGoal(state) || tryReachNextGoal(state)) {
                 return true;

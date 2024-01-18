@@ -1,6 +1,8 @@
 package algos.lists;
 
 import java.util.Collection;
+import java.util.function.BinaryOperator;
+import java.util.stream.Stream;
 
 public interface Heap<E extends Comparable<E>> {
   int size();
@@ -13,6 +15,7 @@ public interface Heap<E extends Comparable<E>> {
   void clear();
   E peek();
   E poll();
+  Stream<E> stream();
 
   /**
    * Heapify Down operation
@@ -43,6 +46,8 @@ public interface Heap<E extends Comparable<E>> {
    */
   int indexOf(E element);
 
+  E get(int index);
+
   /**
    * Change priority at the index.
    * 
@@ -51,5 +56,10 @@ public interface Heap<E extends Comparable<E>> {
    * @param changedPriorityElement
    */
   void changeKey(int current, E changedPriorityElement);
+
+  default void changeKey(int current, E changedData, BinaryOperator<E> changer) {
+    E result = changer.apply(get(current), changedData);
+    changeKey(current, result);
+  }
 
 }

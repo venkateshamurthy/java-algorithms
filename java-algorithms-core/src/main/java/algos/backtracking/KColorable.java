@@ -99,7 +99,7 @@ public class KColorable implements BackTracker<KColorable.State> {
         return rowRange.contains(state.index) && state.colour!=null &&
                 graph.getOrDefault(state.index, ImmutableList.of())
                         .stream()
-                        .allMatch(i->solution[i]!=state.colour);
+                        .allMatch(i -> solution[i] != state.colour);
     }
 
     @Override

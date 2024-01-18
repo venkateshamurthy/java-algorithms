@@ -17,6 +17,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
@@ -30,9 +31,9 @@ import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class LinkedList<T> implements List<T> {
-	static final Logger log = LogManager
-			.getLogger(StringFormatterMessageFactory.INSTANCE);
+	//static final Logger log = LogManager.getLogger(StringFormatterMessageFactory.INSTANCE);
 	@SuppressWarnings("rawtypes") Element sentinel = Element.of("sentinel");
 	AtomicInteger counter = new AtomicInteger(0);
 	AtomicInteger modCount = new AtomicInteger(0);

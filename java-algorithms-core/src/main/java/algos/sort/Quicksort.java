@@ -1,119 +1,68 @@
 package algos.sort;
 
-import static algos.utils.Utils.swap;
+import com.google.common.collect.Lists;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import static java.util.Collections.swap;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.random.RandomDataGenerator;
-
-@Slf4j
-public class Quicksort {
-    private int[] numbers;
-    private int number;
-    private RandomDataGenerator random = new RandomDataGenerator();
-    PIVOT_STRATEGY pivoting = PIVOT_STRATEGY.MEDIAN;
+class Quicksort {
 
     public static void main(String[] args) {
-        int[] input = {10, 9, 8, 7, 6, 5, 11, 23, 45, 67, 89, 32, 37, 52, 43,
-                68, 14, 4, 3, 2, 1};
-
-        new Quicksort(PIVOT_STRATEGY.RANDOM).sort(input);
+        ArrayList<Integer> input = Lists
+                //.newArrayList(5, 1, 8, 3, 9, 4, 1, 7, 5)
+                .newArrayList(-913743, 3241, 999999, 1243153, 0, 0, 999999999)
+        ;
+        ArrayList<Integer> result = quick_sort(input);
+        System.out.println(result);
     }
 
-    public Quicksort(PIVOT_STRATEGY s) {
-        this.pivoting = s;
+    static ArrayList<Integer> quick_sort(ArrayList<Integer> arr) {
+        // Write your code here.
+        quickSort(arr, 0, arr.size() - 1);
+        return arr;
     }
 
-    public void sort(int[] values) {
-        // check for empty or null array
-        if (values == null || values.length == 0) {
-            return;
-        }
-        this.numbers = Arrays.copyOf(values, values.length);
-        number = values.length;
-        //
-        for (int i = 0; i < number; i++) {
-            this.numbers = Arrays.copyOf(values, values.length);
-            log.info("quickselect[" + i + "]:"
-                    + quickselect(0, number - 1, i));
-        }
-        this.numbers = Arrays.copyOf(values, values.length);
-        quicksort(0, number - 1);
-        log.info(ArrayUtils.toString(numbers));
-    }
-
-    private int partition(int left, int right) {
-        int pivot = pivoting.pivot(numbers, left, right);
-        int pivotVal = numbers[pivot];
-
-        // Swap the pivot with right most
-        swap(numbers, pivot, right);
-
-        // Start with left
-        int storeIndex = left--;
-        //While entering left will be negative; but due to post incr itsback to 0
-        while (left++ < right) {
-            if (numbers[left] < pivotVal)
-                swap(numbers, left, storeIndex++);
-        }
-
-        // Swap storeIndex with rightmost
-        swap(numbers, right, storeIndex);
-        return storeIndex;
-    }
-
-
-
-    // ith Largest
-    private int quickselect(int low, int high, int i) {
-
-        while (high > low) {
-            int pivotIndex = partition(low, high);
-            if (pivotIndex - low == i) {
-                high = low = pivotIndex;
-            } else if (pivotIndex - low < i) {
-                i -= (pivotIndex - low) + 1;
-                low = pivotIndex + 1;
-            } else {
-                high = pivotIndex - 1;
-            }
-        }
-        return numbers[low];
-
-    }
-
-    private void quicksort(int low, int high) {
+    static void quickSort(List<Integer> numbers, int low, int high) {
         if (low >= high)
             return;
-        int q = simplePartition(low, high);
-        /**
-         * <pre>
-         * int i = low, j = high, pivot = numbers[q];
-         * while (i &lt;= j) {
-         * 	while (numbers[i] &lt; pivot)
-         * 		i++;
-         * 	while (numbers[j] &gt; pivot)
-         * 		j--;
-         * 	if (i &lt;= j)
-         * 		exchange(i++, j--);
-         * }
-         * </pre>
-         */
-        quicksort(low, q - 1);
-        quicksort(q + 1, high);
+        int q = partitioner.partition(numbers, low, high);
+        quickSort(numbers, low, q - 1);
+        quickSort(numbers, q + 1, high);
     }
 
-    private int simplePartition(int lo, int hi) {
-        int mid = numbers[lo]/2 + numbers[hi]/2;
-        int pivot = numbers[mid];
-        while (lo < hi) {
-            while (numbers[lo] < pivot) lo++;
-            while (numbers[hi] > pivot) hi--;
-            swap(numbers, lo, hi);
-        }
-        return lo;
+    static PartitionStrategy partitioner = Partitioner.LOMUTO;
+
+    interface PartitionStrategy {
+        int partition(List<Integer> numbers, int start, int end);
+    }
+
+    enum Partitioner implements PartitionStrategy {
+        LOMUTO {
+            public int partition(List<Integer> numbers, int start, int end) {
+                int smaller = start;// start is the pivot
+                for (int bigger = start + 1; bigger <= end; bigger++) {
+                    if (numbers.get(bigger) <= numbers.get(start)) {
+                        smaller++;
+                        swap(numbers, smaller, bigger);
+                    }
+                }
+                swap(numbers, smaller, start);
+                return smaller;
+            }
+        },
+        HOARE {
+            public int partition(List<Integer> a, int start, int end) {
+                int smaller = start+1, bigger = end;
+                while (smaller <= bigger) {
+                    if      (a.get(smaller) <  a.get(start)) smaller++;
+                    else if (a.get(bigger)  >= a.get(start)) bigger--;
+                    else swap(a, smaller++, bigger--);
+                }
+                swap(a, start, bigger);
+                return bigger;
+            }
+        };
     }
 }

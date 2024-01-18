@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import lombok.NonNull;
 
-public interface ComparableNode<T extends Comparable<T>>{
+public interface  ComparableNode<T extends Comparable<T>>{
   @NonNull Comparator<T> comparator();
   T        value();
   void     setValue(T value);

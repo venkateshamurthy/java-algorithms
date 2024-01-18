@@ -28,8 +28,7 @@ public class SeggregateAsAndBs {
 		if (objects != null && objects.length > 0) {
 			int left = 0, right = objects.length - 1;
 			while (left < right) {
-				if (objects[left] != null
-						&& objects[left].getClass().equals(classA)) {
+				if (objects[left] != null && objects[left].getClass().equals(classA)) {
 					left++;
 					continue;
 				}

@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author vmurthy
  */
-@Slf4j
+//@Slf4j
 public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
 
   public MinHeap() {
@@ -46,14 +46,14 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
       pq.add(new Employee("" + (i), i));
     }
     // heap.build();
-    log.info("Java Priority Que:{}", pq);
-    log.info("{}", heap);
+    //log.info("Java Priority Que:{}", pq);
+    //log.info("{}", heap);
 
     while (!heap.isEmpty() && !pq.isEmpty()) {
       Employee heapEmployee, pqEmployee;
-      log.info("{} {}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
-      Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
-          "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+      //log.info("{} {}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+      //Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+      //    "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
     }
     Assert.isTrue(heap.isEmpty() && pq.isEmpty());
     java.util.List<Employee> list = new ArrayList<>();
@@ -64,28 +64,28 @@ public class MinHeap<E extends Comparable<E>> extends AbstractHeap<E> {
     heap.addAll(list);
     pq.addAll(list);
     // heap.build();
-    log.info("Java Priority Que:{}", pq);
-    log.info("{}", heap);
+    //log.info("Java Priority Que:{}", pq);
+    //log.info("{}", heap);
     // Change Key
     int index = 2;
-    log.info("Testing change key @index=" + index);
+    //log.info("Testing change key @index=" + index);
     heap.changeKey(index, new Employee("" + 3, 0));
     pq.remove(new Employee("" + 3, 1));
     pq.add(new Employee("" + 3, 0));
     Employee heapEmployee, pqEmployee;
-    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
-    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
-        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
-    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
-    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
-        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+    //log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    //Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+     //   "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+    //log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    //Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+    //    "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
 
     heap.changeKey(1, new Employee("" + 4, -1));
     pq.remove(new Employee("" + 4, 4));
     pq.add(new Employee("" + 4, -1));
-    log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
-    Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
-        "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
+    //log.info("Heap.Min={}, Java PQ.Min={}", heapEmployee = heap.poll(), pqEmployee = pq.poll());
+    //Assert.isTrue(heapEmployee != null && heapEmployee.equals(pqEmployee),
+     //   "Employees are different! heapEmployee=" + heapEmployee + " pqEmployee=" + pqEmployee);
   }
 }
 

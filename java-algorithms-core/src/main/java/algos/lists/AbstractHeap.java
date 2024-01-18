@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.util.Assert;
@@ -17,7 +18,6 @@ import lombok.ToString;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Data
 @ToString(includeFieldNames = false, of = { "elementData" }, callSuper = true)
 public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E> implements Heap<E> {
@@ -198,9 +198,9 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
       heapifyUp(currentIndex);
     } else if (upOrDown > 0) {
       heapifyDown(currentIndex);
-    } else
-      log.warn("Did not heapify! at index {} with the newer value {} " + "due to equal priority of existing element {}",
-          currentIndex, changedPriorityElement, get(currentIndex));
+    } //else
+      //log.warn("Did not heapify! at index {} with the newer value {} " + "due to equal priority of existing element {}",
+      //    currentIndex, changedPriorityElement, get(currentIndex));
   }
 
   private boolean compare(int current, int other) {
@@ -214,5 +214,10 @@ public abstract class AbstractHeap<E extends Comparable<E>> extends ArrayList<E>
   public E peek() {
     return isEmpty() ? null : get(0);
   }
+
+  public Stream<E> stream() {
+    return super.stream();
+  }
+
 
 }

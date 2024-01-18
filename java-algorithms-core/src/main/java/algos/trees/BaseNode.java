@@ -99,15 +99,15 @@ public abstract class BaseNode<N extends BaseNode<N>> {
 class RedBlack<T extends Comparable<T>> extends BaseNode<RedBlack<T>> implements ComparableNode<T>{
   public static final Boolean RED = true, BLACK = false;
   @NonFinal Boolean color=RED;
-  Comparator<T> comparator=(o1,o2)->o1.compareTo(o2);
+  Comparator<T> comparator = Comparable::compareTo;
   @NonFinal T value;
   
   RedBlack(T value){
     super();
     this.value=value;
   }
-  public boolean isRed() {return parent!=here && color==RED;}
-  public boolean isBlack() {return parent!=here && color==BLACK;}
+  public boolean isRed()     {return parent!=here && color==RED;}
+  public boolean isBlack()   {return parent!=here && color==BLACK;}
   public boolean colorFlip() {left.colorFlip();right.colorFlip();return colorFlip();}
 
   public void setValue(T value) {

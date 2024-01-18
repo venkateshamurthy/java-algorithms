@@ -1,51 +1,21 @@
 package algos.trees;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.MIN_VALUE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
-
+import algos.trees.visitors.*;
+import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestWatchman;
-import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.*;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
-import algos.trees.visitors.BSTVisitor;
-import algos.trees.visitors.CountOfPathsHavingAGivenSum;
-import algos.trees.visitors.HasPathSumVisitor;
-import algos.trees.visitors.InOrderPrinter;
-import algos.trees.visitors.LevelOrderPrinter;
-import algos.trees.visitors.MaxSumPathVisitor;
-import algos.trees.visitors.MirroringVisitor;
-import algos.trees.visitors.PostOrderPrinter;
-import algos.trees.visitors.PreOrderPrinter;
-import algos.trees.visitors.PrintVerticalPathVisitor;
-import algos.trees.visitors.SizeVisitor;
-import custom.junit.runners.OrderedJUnit4ClassRunner;
-import lombok.AccessLevel;
-import lombok.val;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.MIN_VALUE;
+import static org.junit.Assert.*;
 
 /**
  * @author vmurthy
@@ -53,19 +23,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 // Log4j Handle creator (from lombok)
 
-@Slf4j
+
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RunWith(OrderedJUnit4ClassRunner.class)
 public class TestBinarySearchTree {
-	//static final Logger log = LogManager.getLogger(StringFormatterMessageFactory.INSTANCE);
-	@Rule
-	public TestWatchman testWatchMan = new TestWatchman() {
-		@Override
-		public void starting(FrameworkMethod method) {
-			super.starting(method);
-			log.debug("Starting .." + method.getName());
-		}
-	};
+	static final Logger log = LogManager.getLogger();
 
 	Tree<Integer, BSTNode<Integer>> bst = new VanillaBST<Integer>(o->new BSTNode<Integer>(o));
 
