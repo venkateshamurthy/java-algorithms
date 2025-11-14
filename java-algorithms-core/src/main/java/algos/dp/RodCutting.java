@@ -51,7 +51,6 @@ public class RodCutting {
 		RodCutting rod = new RodCutting();
 		rod.cutRod(11);
 		rod.print(6);
-		
 		log.info("profitDP:"+RodCutting.profitDP(p, 11));
 	}
 }

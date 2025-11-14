@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Example : this should get us 19 with 2nd, 3rd, 4th and 6th item picked up
@@ -42,6 +43,10 @@ public class Knapsack {
 
     static int W = 18, n = wt.length;
     static int[][] K = new int[n + 1][W + 1];
+
+    private static boolean isNoneBlank(String... strings) {
+        return StringUtils.isNoneBlank(strings);
+    }
 
     private static int knapsack() {
         log.info(ArrayUtils.toString(wt));

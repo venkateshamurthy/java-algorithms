@@ -1,96 +1,107 @@
 package algos.backtracking;
 
-import com.google.common.collect.Range;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@Slf4j
-public class NQueens implements BackTracker<NQueens.Position> {
+public class NQueens {//implements BackTracker<NQueens.Position> {
 
     private final int queens;
-    @Getter private final int[][] chessBoard;
-    private final Range<Integer> validRange;
+    private final String[][] chessBoard;
+    private final Range validRange;
     private final boolean[] rows;
     private final boolean[] cols;
     // Sum and Diff diagonals
     private final Map<Integer, Boolean> sumDiagonal = new HashMap<>();
     private final Map<Integer, Boolean> diffDiagonal = new HashMap<>();
+    static Position MAX = null;
+
 
     NQueens(int queenCount){
         queens= queenCount;
-        chessBoard = new int[queens][queens];
-        validRange = Range.closed(0, queens);
+        chessBoard = new String[queens][queens];
+        validRange = new Range(0, queens);
         rows = new boolean[queens];
         cols = new boolean[queens];
+        MAX = new Position(queens-1,queens-1, 0);
+        clear();
+    }
+
+    List<String> getChessBoard() {
+
+        List<String> result = new ArrayList<>();
+
+        for (String[] strings : chessBoard) {
+            StringBuilder temp = new StringBuilder();
+            for (int j = 0; j < chessBoard[0].length; j++) {
+                temp.append(strings[j]);
+            }
+            result.add(temp.toString());
+        }
+        return result;
     }
 
     void print() {
-        final StringBuilder sb = new StringBuilder("Data Matrix\n");
-
-        for (int i = 0; i < chessBoard.length; i++) {
-            for (int j = 0; j < chessBoard[0].length; j++) {
-                sb.append(" ").append(chessBoard[i][j]);
-            }
-            sb.append("\n");
-        }
-
-        log.info("{}", sb);
+        getChessBoard().forEach(System.out::println);;
     }
 
-    public boolean search() {
-        for (int i = 0; i < chessBoard.length; i++) {
-            for (int j = 0; j < chessBoard[0].length; j++) {
+    public List<String> search(int p, int q) {
+        for (int i = p; i < chessBoard.length; i++) {
+            for (int j = q; j < chessBoard[0].length; j++) {
                 if (search(new Position(i, j, 0))) {
-                    return true;
+                    return getChessBoard();
                 }
             }
         }
-        return false;
+        return new ArrayList<>();
     }
 
-    @Override
+    void clear() {
+        for(int i=0;i<queens;i++) {
+            rows[i] = cols[i] = false;
+            for (int j = 0; j < queens; j++)
+                chessBoard[i][j] = "-";
+        }
+        sumDiagonal.clear();
+        diffDiagonal.clear();
+    }
+
     public void markSolution(final Position p) {
-        chessBoard[p.x][p.y] = p.index + 1;
+        chessBoard[p.x][p.y] = "q";
         rows[p.x] = cols[p.y] = true;
         sumDiagonal.put(p.x + p.y, true);
         diffDiagonal.put(p.x - p.y, true);
     }
 
-    @Override
     public void unmarkSolution(final Position p) {
-        chessBoard[p.x][p.y] = 0;
+        chessBoard[p.x][p.y] = "-";
         rows[p.x] = cols[p.y] = false;
         sumDiagonal.put(p.x + p.y, false);
         diffDiagonal.put(p.x - p.y, false);
     }
 
-    @Override
     public boolean isStateGoal(final Position p) {
         return p.index == queens - 1;
     }
 
-    @Override
     public boolean isStateValid(final Position p) {
         return p.index < queens &&
-                validRange.contains(p.x) && validRange.contains(p.y) &&
+                validRange.test(p.x) && validRange.test(p.y) &&
                 !rows[p.x] && !cols[p.y] &&
                 !sumDiagonal.getOrDefault(p.x + p.y, false) &&
                 !diffDiagonal.getOrDefault(p.x - p.y, false);
     }
 
-    @Override
     public Stream<Position> nextPossibleStates(Position p) {
         return IntStream.range(0, queens).boxed()
-                .filter(r->r!=p.x)
-                .map(r -> Position.of(r, 1 + p.y, p.index + 1));
+                .filter(r->r != p.x)
+                .map(r -> new Position(r, 1 + p.y, p.index + 1))
+                .filter(Position::valid);
     }
 
     /**
@@ -105,23 +116,61 @@ public class NQueens implements BackTracker<NQueens.Position> {
      * 0 0 3 0 0 0 0 0
      * </pre>
      */
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    @RequiredArgsConstructor(staticName = "of")
+
     static final class Position {
         int x, y;
         int index;
+        String value="-";
+        Position(int x, int y, int index) {
+            this.x = x;
+            this.y = y;
+            this.index = index;
+        }
+
+        public boolean valid() {
+            return x<= MAX.x && y<=MAX.y ;
+        }
+    }
+
+    public boolean tryReachNextGoal(final Position state) {
+        return nextPossibleStates(state).anyMatch(this::search);
+    }
+    public boolean search(final Position state) {
+        if (isStateValid(state)) {
+            markSolution(state);
+            if (isStateGoal(state) || tryReachNextGoal(state)) {
+                return true;
+            }
+            unmarkSolution(state);
+        }
+        return false;
     }
 
     public static void main(String[] args) {
-        final NQueens nQueens = new NQueens(8);
-
-        if (nQueens.search()) {
-            log.info("YES QUEENS PLACED");
+        final NQueens nQueens = new NQueens(5);
+        List<List<String>> result = nQueens.search();
+        if(!result.isEmpty()) {
+            System.out.println("YES QUEENS PLACED:\n"+result);
         } else {
-            log.info("NO QUEENS FOUND");
+            System.out.println("NO QUEENS FOUND");
         }
 
-        nQueens.print();
+        //nQueens.print();
+    }
+
+    public List<List<String>> search() {
+        List<List<String>> result= new ArrayList<>();
+        for (int p = 0; p < queens; p++) {
+            for (int q = 0; q < queens; q++) {
+                clear();
+                List<String> temp = search(p, q);
+                if ( ! temp.isEmpty() && !result.contains(temp)) {
+                    result.add(temp);
+                    temp.forEach(System.out::println);
+                }
+            }
+        }
+        return result;
     }
 
     // From rosetta website
@@ -162,6 +211,18 @@ public class NQueens implements BackTracker<NQueens.Position> {
                     y--;
                 }
             }
+        }
+    }
+
+    static class Range implements Predicate<Integer> {
+        int min, max;
+        Range(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+        @Override
+        public boolean test(Integer i) {
+            return i>=min && i<=max;
         }
     }
 }

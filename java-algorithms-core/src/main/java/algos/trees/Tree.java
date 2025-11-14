@@ -109,9 +109,9 @@ public interface Tree<T extends Comparable<T>, N extends BaseNode<N> & Comparabl
   default boolean validate(N e, N MIN, N MAX) {
     boolean result = true;
     if (result && e.hasLeft())
-      result = e.left().gt(MIN)  && validate(e.left(), MIN, e);
+      result = e.ge(e.left()) && e.left().ge(MIN)  && validate(e.left(), MIN, e);
     if (result && e.hasRight())
-      result = e.right().lt(MAX) && validate(e.right(), e, MAX);
+      result = e.le(e.right()) && e.right().le(MAX) && validate(e.right(), e, MAX);
     return result;
   }
   

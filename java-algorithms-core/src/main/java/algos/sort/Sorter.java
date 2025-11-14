@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import algos.lists.MaxHeap;
@@ -167,6 +168,7 @@ public class Sorter {
                 mergeSort(a, mid + 1, j);
                 merge(a, i, mid, j);
             }
+            ArrayList<Integer> l = new ArrayList<>();
             return a;
         }
 
@@ -231,31 +233,29 @@ public class Sorter {
         }
     }
 
-    class QuickSelect extends QuickSort implements KthSelector {
+    class QuickSelect extends QuickSort {
         /**
          * Quick Select
          *
-         * @param low
-         * @param high
+         * @param left
+         * @param right
          * @param ith
          *            largest
          * @return
          */
-        @Override
-        public int select(int low, int high, int i) {
 
-            while (high > low) {
-                int pivotIndex = partition(low, high);
-                if (pivotIndex - low == i) {
-                    high = low = pivotIndex;
-                } else if (pivotIndex - low < i) {
-                    i -= (pivotIndex - low) + 1;
-                    low = pivotIndex + 1;
+        public int select(int[] numbers, int left, int right, int k) {
+            while (right > left) {
+                int index = partitionStrategy.partition(numbers, left, right);
+                if (index == k) {
+                    return  numbers[index];
+                } else if (index < k) {
+                    left = index + 1;
                 } else {
-                    high = pivotIndex - 1;
+                    right = index - 1;
                 }
             }
-            return numbers[low];
+            return numbers[left];
         }
     }
 
@@ -302,100 +302,4 @@ public class Sorter {
     }
 }
 
-interface PartitionStrategy {
-    int partition(int[] numbers, int start, int end);
-}
 
-enum Partitioner implements PartitionStrategy {
-    LOMOTO {
-        public int partition(int[] numbers, int start, int end) {
-            int smaller = start;
-            for (int bigger = start + 1; bigger < end; bigger++) {
-                if (numbers[bigger] < numbers[start]) {
-                    smaller++;
-                    swap(numbers, smaller, bigger);
-                }
-            }
-            swap(numbers, smaller, start);
-            return smaller;
-        }
-    },
-    HOARE {
-        public int partition(int[] a, int start, int end) {
-            int smaller = start + 1, bigger = end;
-            while (smaller <= bigger) {
-                if (a[smaller] < a[start]) smaller++;
-                else if (a[bigger] >= a[start]) bigger--;
-                else swap(a, smaller++, bigger--);
-            }
-            swap(a, start, bigger);
-            return bigger;
-        }
-    }
-}
-
-/**
- * A Pivoting strategy
- *
- * @author vmurthy
- *
- */
-interface PivotingStrategy {
-    int pivot(int[] numbers, int low, int high);
-}
-
-/**
- * Enum implementation of {@link PivotingStrategy}
- *
- * @author vmurthy
- *
- */
-enum PIVOT_STRATEGY implements PivotingStrategy {
-
-    MEDIAN() {
-        @Override
-        public int pivot(int[] numbers, int low, int high) {
-            return low + (high - low) / 2;
-        }
-
-    },
-    RANDOM() {
-        @Override
-        public int pivot(int[] numbers, int low, int high) {
-            return random.nextInt(low, high);
-        }
-
-    },
-    MEDIAN_OF_3() {
-        @Override
-        public int pivot(int[] numbers, int low, int high) {
-            final int middle = low + (high - low) / 2;
-            int[] pivots = new int[]{numbers[low], numbers[middle], numbers[high]};
-            Arrays.sort(pivots);
-            return pivots[1];
-			/*
-			final double wBegin = numbers[low];
-			final double wMiddle = numbers[middle];
-			final double wEnd = numbers[high];
-			if (wBegin < wEnd) {
-				if (wMiddle < wBegin)
-					return low;
-				else if (wMiddle > wEnd)
-					return high;
-				else
-					return middle;
-			} else { // if(wEnd>wBegin)
-				if (wMiddle < wBegin)
-					return low;
-				else if (wMiddle > wEnd)
-					return high;
-				else
-					return middle;
-			}
-			*/
-        }
-
-    };
-
-    RandomDataGenerator random = new RandomDataGenerator();
-}

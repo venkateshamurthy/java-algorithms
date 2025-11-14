@@ -2,20 +2,23 @@ package algos.sort;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static algos.sort.PIVOT_STRATEGY.RANDOM;
 import static java.util.Collections.swap;
 
 class Quicksort {
 
     public static void main(String[] args) {
-        ArrayList<Integer> input = Lists
-                //.newArrayList(5, 1, 8, 3, 9, 4, 1, 7, 5)
-                .newArrayList(-913743, 3241, 999999, 1243153, 0, 0, 999999999)
+        //ArrayList<Integer> input = Lists.newArrayList(5, 1, 8, 3, 9, 4, 41, 7, 35, 13, 19,
+        //        15, 16,30, 29, 34, 25, 28, 22, 24)
+        //ArrayList<Integer> input = Lists.newArrayList(-913743, 3241, 1001, 978, 999999, 1340, 1243153, 0, 0, 999999999)
+        ArrayList<Integer> input = new Random().ints(100).boxed().distinct()
+                .collect(Collectors.toCollection(Lists::newArrayList))
         ;
         ArrayList<Integer> result = quick_sort(input);
-        System.out.println(result);
+        System.out.println("result:"+result);
     }
 
     static ArrayList<Integer> quick_sort(ArrayList<Integer> arr) {
@@ -27,42 +30,10 @@ class Quicksort {
     static void quickSort(List<Integer> numbers, int low, int high) {
         if (low >= high)
             return;
-        int q = partitioner.partition(numbers, low, high);
+        int q = partitioner.partition(RANDOM, Integer::compareTo, numbers, low, high);
         quickSort(numbers, low, q - 1);
         quickSort(numbers, q + 1, high);
     }
 
     static PartitionStrategy partitioner = Partitioner.LOMUTO;
-
-    interface PartitionStrategy {
-        int partition(List<Integer> numbers, int start, int end);
-    }
-
-    enum Partitioner implements PartitionStrategy {
-        LOMUTO {
-            public int partition(List<Integer> numbers, int start, int end) {
-                int smaller = start;// start is the pivot
-                for (int bigger = start + 1; bigger <= end; bigger++) {
-                    if (numbers.get(bigger) <= numbers.get(start)) {
-                        smaller++;
-                        swap(numbers, smaller, bigger);
-                    }
-                }
-                swap(numbers, smaller, start);
-                return smaller;
-            }
-        },
-        HOARE {
-            public int partition(List<Integer> a, int start, int end) {
-                int smaller = start+1, bigger = end;
-                while (smaller <= bigger) {
-                    if      (a.get(smaller) <  a.get(start)) smaller++;
-                    else if (a.get(bigger)  >= a.get(start)) bigger--;
-                    else swap(a, smaller++, bigger--);
-                }
-                swap(a, start, bigger);
-                return bigger;
-            }
-        };
-    }
 }

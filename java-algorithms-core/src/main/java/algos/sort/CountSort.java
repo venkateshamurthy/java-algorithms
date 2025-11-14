@@ -33,4 +33,21 @@ public class CountSort {
         }
         return  a;
     }
+
+    static ArrayList<Character> sort_array(ArrayList<Character> a) {
+        int max = a.stream().max(Character::compareTo).orElseThrow();
+        int min = a.stream().min(Character::compareTo).orElseThrow();
+        Map<Integer, Integer> c = new HashMap<>(a.size());
+        for (int val : a)
+            c.put(val, c.getOrDefault(val, 0) + 1);
+
+        Integer count;
+        for (int j = min, k = 0; j <= max; j++) {
+            if ((count = c.get(j)) != null) {
+                for(int x = 0; x < count; x++)
+                    a.set(k++, (char)j);
+            }
+        }
+        return  a;
+    }
 }

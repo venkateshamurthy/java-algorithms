@@ -4,6 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 @Slf4j
 public class NQueensTest {
     int[][] expected = {
@@ -21,12 +26,15 @@ public class NQueensTest {
     public void testEightQueens() {
         final NQueens nQueens = new NQueens(8);
 
-        if (nQueens.search()) {
+        if (! nQueens.search().isEmpty()) {
             log.info("YES QUEENS PLACED");
         } else {
             log.info("NO QUEENS FOUND");
         }
         nQueens.print();
-        Assert.assertArrayEquals(expected, nQueens.getChessBoard());
+        List<String> expectedList = Arrays.stream(expected)
+                .map(Arrays::toString)
+                .collect(Collectors.toList());
+        Assert.assertEquals(expectedList, nQueens.getChessBoard());
     }
 }

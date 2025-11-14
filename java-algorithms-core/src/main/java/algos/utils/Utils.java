@@ -33,4 +33,12 @@ public class Utils {
 			t[j]=temp;
 		}
 	}
+
+    public static void swap(char[] t, int i, int j) {
+		if(i!=j && t[i] != t[j]) {
+			char temp=t[i];
+			t[i]=t[j];
+			t[j]=temp;
+		}
+    }
 }

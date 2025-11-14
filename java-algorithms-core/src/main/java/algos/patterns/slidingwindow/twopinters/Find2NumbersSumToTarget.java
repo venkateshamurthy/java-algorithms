@@ -21,6 +21,8 @@ public class Find2NumbersSumToTarget {
                     else if (numbers[j] > target - numbers[i]) j--;
                     else
                         pairs.add(Pair.of(i++, j--));
+
+                    //ArrayList<Integer> x = (ArrayList)Arrays.asList(1,3);
                 }
                 return pairs;
             }

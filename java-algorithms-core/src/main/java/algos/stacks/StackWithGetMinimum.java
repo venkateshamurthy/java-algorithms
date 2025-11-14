@@ -1,5 +1,7 @@
 package algos.stacks;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ public class StackWithGetMinimum <E extends Comparable<E>>{
 	}
 	
 	public E pop(){
+		
 		E popped=original.pop();
 		if(popped.equals(minStack.peek()))
 			minStack.pop();
@@ -34,15 +37,17 @@ public class StackWithGetMinimum <E extends Comparable<E>>{
 	}
 	
 	public static void main(String[] args){
-		Integer[] a={8,7,2,5,4,1,2,19,13,17,16};
-		StackWithGetMinimum<Integer> stack = new StackWithGetMinimum<Integer>();
-		for (Integer i:a) {
-			stack.push(i);
-			log.debug("{}",stack.peekMin());
+		// Write your code here.
+		List<Integer> operations=List.of(10, 5, 0, -1, 0, -1, 0);
+		StackWithGetMinimum<Integer> stack = new StackWithGetMinimum<>();
+		ArrayList<Integer> result = new ArrayList<>();
+		for (int i =0;i<operations.size(); i++) {
+			switch(operations.get(i)) {
+				case -1: {stack.pop(); if (stack.minStack.isEmpty()) result.add(-1); break;}
+				case 0 : {if (!stack.minStack.isEmpty())result.add(stack.peekMin()); break;}
+				default : {stack.push(operations.get(i)); break;}
+			}
 		}
-		while(!stack.isEmpty()){
-			stack.pop();
-			log.debug("{}",stack.peekMin());
-		}
+		System.out.println(result);
 	}
 }

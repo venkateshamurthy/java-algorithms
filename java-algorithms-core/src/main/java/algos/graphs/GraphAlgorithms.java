@@ -231,7 +231,7 @@ public class GraphAlgorithms<T extends Comparable<T>> {
       heap.addAll(G.verticies());
       log.info("Heap:{}", heap.toString());
 
-      while (!heap.isEmpty()) {
+      while ( ! heap.isEmpty()) {
         val u = heap.poll();
         for (val edge : G.adjE(u)) {
           val v = edge.to();

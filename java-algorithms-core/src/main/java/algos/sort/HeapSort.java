@@ -1,5 +1,6 @@
 package algos.sort;
 
+import algos.heaps.BinaryHeap;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class HeapSort {
 
     static ArrayList<Integer> heap_sort(ArrayList<Integer> numbers) {
         //Write your code here
-        final BinaryHeap heap = new BinaryHeap(numbers, maxComparator);
+        final BinaryHeap<Integer> heap = new BinaryHeap<>(numbers, maxComparator);
         for (int i = numbers.size() - 1; i >= 0; ) {
             Collections.swap(numbers, 0, i);
             i--;
@@ -28,49 +29,6 @@ public class HeapSort {
         return numbers;
     }
 
-    private static class BinaryHeap {
-        final Comparator<Integer> comparator;
-        final List<Integer> a;
-        BinaryHeap(final List<Integer> numbers, Comparator<Integer> comparator) {
-            this.comparator = comparator;
-            this.a = numbers;
-            for (int i = (a.size() - 1) >> 1; i >= 0; i--) {
-                heapifyDown(i);
-            }
-        }
 
-        private boolean compare(int current, int other) {
-            return current >= 0 && current < a.size() && other >= 0 && other < a.size()
-                    && comparator.compare(a.get(current), a.get(other)) == -1;
-        }
-
-        private int heapifyUp(int location) {
-            while (compare(location, location >> 1)) {
-                Collections.swap(a, location, location >> 1);
-                location >>= 1;
-            }
-            return location;
-        }
-
-        private void heapifyDown(int location) {
-            heapifyDown(location, a.size() - 1);
-        }
-
-        private void heapifyDown(int location, int limit) {
-            int left = (location << 1) + 1; // index of node i's left child
-            int right = (location << 1) + 2; // index of node i's right child
-            int extreme = location; // Find out which is real extreme(i.e min/max)
-            if (left <= limit && compare(left, location))
-                extreme = left;
-
-            if (right <= limit && compare(right, extreme))
-                extreme = right;
-
-            if (extreme != location) {
-                Collections.swap(a, location, extreme);
-                heapifyDown(extreme, limit);
-            }
-        }
-    }
 }
 

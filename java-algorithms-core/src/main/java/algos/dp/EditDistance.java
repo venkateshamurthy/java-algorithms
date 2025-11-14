@@ -27,6 +27,7 @@ public class EditDistance {
 
 		for (int i = 0; i <= str1.length(); i++)
 			distance[i][0] = i;//b'cos from 0 to so many characters to be added
+
 		for (int j = 1; j <= str2.length(); j++)
 			distance[0][j] = j;//b'cos from 0 to so many characters to be added
 
@@ -36,8 +37,7 @@ public class EditDistance {
 						distance[i - 1][j] + 1,
 						distance[i][j - 1] + 1,
 						distance[i - 1][j - 1]
-								+ ((str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0
-										: 1));
+								+ ((str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0 : 1));
 
 		return distance[str1.length()][str2.length()];
 	}
