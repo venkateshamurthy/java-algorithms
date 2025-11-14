@@ -1,10 +1,9 @@
 package algos.patterns.slidingwindow;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +17,7 @@ public class SlidingWindow implements Iterator<Deque<Integer>> {
 
     @PostConstruct
     public void postConstruct() {
+        System.out.println("PostConstruct executing...");
         end = start + K;
         que = new ArrayDeque<Integer>(K);
     }
